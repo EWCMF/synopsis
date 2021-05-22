@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCardsTable extends Migration
+class AddCardCardTypeAssoc extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreateCardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cards', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->json('properties');
-            $table->timestamps();
+        Schema::table('cards', function (Blueprint $table) {
+            $table->foreignId('card_type_id')->after('name')->constrained('card_types');
         });
     }
 
@@ -28,6 +25,8 @@ class CreateCardsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cards');
+        Schema::table('cards', function (Blueprint $table) {
+            $table->dropColumn('card_type_id');
+        });
     }
 }
