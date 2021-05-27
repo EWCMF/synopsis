@@ -39,37 +39,37 @@ class CardSeeder extends Seeder
             //Resource cards
             [
                 'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('1 Commerce', 'Commerce', 1)),
+                'properties' => json_encode(new ResourceCard('1 Commerce', 'Commerce', 1, 8)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('5 Commerce', 'Commerce', 5)),
+                'properties' => json_encode(new ResourceCard('5 Commerce', 'Commerce', 5, 20)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('1 Production', 'Production', 1)),
+                'properties' => json_encode(new ResourceCard('1 Production', 'Production', 1, 8)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('5 Production', 'Production', 5)),
+                'properties' => json_encode(new ResourceCard('5 Production', 'Production', 5, 20)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('1 Food', 'Food', 1)),
+                'properties' => json_encode(new ResourceCard('1 Food', 'Food', 1, 8)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('5 Food', 'Commerce', 5)),
+                'properties' => json_encode(new ResourceCard('5 Food', 'Commerce', 5, 20)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
@@ -77,49 +77,49 @@ class CardSeeder extends Seeder
             //Bonus resource cards
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('2 Bonus Commerce', 'Commerce', 2, false)),
+                'properties' => json_encode(new BonusResourceCard('2 Bonus Commerce', 'Commerce', 2, false, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('3 Bonus Commerce', 'Commerce', 3, false)),
+                'properties' => json_encode(new BonusResourceCard('3 Bonus Commerce', 'Commerce', 3, false, 2)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('2 Bonus Production', 'Production', 2, false)),
+                'properties' => json_encode(new BonusResourceCard('2 Bonus Production', 'Production', 2, false, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('3 Bonus Production', 'Production', 3, false)),
+                'properties' => json_encode(new BonusResourceCard('3 Bonus Production', 'Production', 3, false, 3)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('2 Bonus Food', 'Food', 2, false)),
+                'properties' => json_encode(new BonusResourceCard('2 Bonus Food', 'Food', 2, false, 4)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('3 Bonus Food', 'Food', 3, false)),
+                'properties' => json_encode(new BonusResourceCard('3 Bonus Food', 'Food', 3, false, 4)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('1 Bonus Wild', 'Wild', 1, true)),
+                'properties' => json_encode(new BonusResourceCard('1 Bonus Wild', 'Wild', 1, true, 4)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('2 Bonus Wild', 'Wild', 2, true)),
+                'properties' => json_encode(new BonusResourceCard('2 Bonus Wild', 'Wild', 2, true, 3)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
@@ -127,7 +127,7 @@ class CardSeeder extends Seeder
             //Population cards
             [
                 'card_type_id' => $populationId,
-                'properties' => json_encode(new PopulationCard('1 Population', 'Grants 1 population', 1)),
+                'properties' => json_encode(new PopulationCard('1 Population', 'Grants 1 population', 1, 48)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
@@ -135,55 +135,55 @@ class CardSeeder extends Seeder
             //Building cards
             [
                 'card_type_id' => $buildingId,
-                'properties' => json_encode(new BuildingCard('Market', 6, '100% commerce from base plot value', 1)),
+                'properties' => json_encode(new BuildingCard('Market', 6, '100% commerce from base plot value', 1, 2)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $buildingId,
-                'properties' => json_encode(new BuildingCard('Barrack', 4, 'Chariots and swordsmen steal 2 population', 2)),
+                'properties' => json_encode(new BuildingCard('Barrack', 4, 'Chariots and swordsmen steal 2 population', 2, 2)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $buildingId,
-                'properties' => json_encode(new BuildingCard('Forge', 6, '100% production from base plot value', 3)),
+                'properties' => json_encode(new BuildingCard('Forge', 6, '100% production from base plot value', 3, 2)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $buildingId,
-                'properties' => json_encode(new BuildingCard('Temple', 4, 'Grants 1 happiness and 1 culture ', 4)),
+                'properties' => json_encode(new BuildingCard('Temple', 4, 'Grants 1 happiness and 1 culture ', 4, 3)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $buildingId,
-                'properties' => json_encode(new BuildingCard('Library', 8, 'Grants 1 culture and -2 technology costs', 5)),
+                'properties' => json_encode(new BuildingCard('Library', 8, 'Grants 1 culture and -2 technology costs', 5, 3)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $buildingId,
-                'properties' => json_encode(new BuildingCard('Monastery', 6, 'Grants 2 culture and -1 technology costs', 6)),
+                'properties' => json_encode(new BuildingCard('Monastery', 6, 'Grants 2 culture and -1 technology costs', 6, 2)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $buildingId,
-                'properties' => json_encode(new BuildingCard('Granary', 6, '100% food from base plot value', 7)),
+                'properties' => json_encode(new BuildingCard('Granary', 6, '100% food from base plot value', 7, 2)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $buildingId,
-                'properties' => json_encode(new BuildingCard('Colosseum', 4, 'Grants 2 happiness', 8)),
+                'properties' => json_encode(new BuildingCard('Colosseum', 4, 'Grants 2 happiness', 8, 2)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $buildingId,
-                'properties' => json_encode(new BuildingCard('Walls', 4, 'Repels 1 attacker', 9)),
+                'properties' => json_encode(new BuildingCard('Walls', 4, 'Repels 1 attacker', 9, 3)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
@@ -191,31 +191,31 @@ class CardSeeder extends Seeder
             //Wonder cards
             [
                 'card_type_id' => $wonderId,
-                'properties' => json_encode(new WonderCard('The Pyramids', 20, '+2 Free resources every turn', 1)),
+                'properties' => json_encode(new WonderCard('The Pyramids', 20, '+2 Free resources every turn', 1, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $wonderId,
-                'properties' => json_encode(new WonderCard('The Colossus', 12, 'Grants 1 culture, immune to attacks for 2 rounds', 2)),
+                'properties' => json_encode(new WonderCard('The Colossus', 12, 'Grants 1 culture, immune to attacks for 2 rounds', 2, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $wonderId,
-                'properties' => json_encode(new WonderCard('The Hanging Gardens', 12, 'Grants 3 happiness and 1 culture', 3)),
+                'properties' => json_encode(new WonderCard('The Hanging Gardens', 12, 'Grants 3 happiness and 1 culture', 3, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $wonderId,
-                'properties' => json_encode(new WonderCard('The Great Library', 16, 'Grants 1 culture and -3 technology cost', 4)),
+                'properties' => json_encode(new WonderCard('The Great Library', 16, 'Grants 1 culture and -3 technology cost', 4, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $wonderId,
-                'properties' => json_encode(new WonderCard('The Great Walls', 16, 'Acts as permanent walls', 5)),
+                'properties' => json_encode(new WonderCard('The Great Walls', 16, 'Acts as permanent walls', 5, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
@@ -223,37 +223,37 @@ class CardSeeder extends Seeder
             //Unit cards
             [
                 'card_type_id' => $unitId,
-                'properties' => json_encode(new UnitCard('Archer ', 'Cannot attack but defends against all units', 1)),
+                'properties' => json_encode(new UnitCard('Archer ', 'Cannot attack but defends against all units', 1, 7)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $unitId,
-                'properties' => json_encode(new UnitCard('Axeman', 'Destroys 1 building, defends against Swordsman, Axeman and Spearman', 2)),
+                'properties' => json_encode(new UnitCard('Axeman', 'Destroys 1 building, defends against Swordsman, Axeman and Spearman', 2, 6)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $unitId,
-                'properties' => json_encode(new UnitCard('Catapult', 'Destroys walls (undefendable)', 3)),
+                'properties' => json_encode(new UnitCard('Catapult', 'Destroys walls (undefendable)', 3, 4)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $unitId,
-                'properties' => json_encode(new UnitCard('Chariot', 'Steals 1 population and destroys 1 building', 4)),
+                'properties' => json_encode(new UnitCard('Chariot', 'Steals 1 population and destroys 1 building', 4, 7)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $unitId,
-                'properties' => json_encode(new UnitCard('Spearman', 'Steals 1 population, defends against chariots', 5)),
+                'properties' => json_encode(new UnitCard('Spearman', 'Steals 1 population, defends against chariots', 5, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $unitId,
-                'properties' => json_encode(new UnitCard('Swordsman', 'Steals 1 population and destroys 1 building', 6)),
+                'properties' => json_encode(new UnitCard('Swordsman', 'Steals 1 population and destroys 1 building', 6, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
@@ -261,37 +261,37 @@ class CardSeeder extends Seeder
             //Plot cards
             [
                 'card_type_id' => $plotId,
-                'properties' => json_encode(new PlotCard('Coast', '2 Commerce base value', 1)),
+                'properties' => json_encode(new PlotCard('Coast', '2 Commerce base value', 1, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $plotId,
-                'properties' => json_encode(new PlotCard('Mountains', '2 Production base value', 2)),
+                'properties' => json_encode(new PlotCard('Mountains', '2 Production base value', 2, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $plotId,
-                'properties' => json_encode(new PlotCard('Grassland', '2 Food base value', 3)),
+                'properties' => json_encode(new PlotCard('Grassland', '2 Food base value', 3, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $plotId,
-                'properties' => json_encode(new PlotCard('Forest', '1 Production and 1 commerce base value', 4)),
+                'properties' => json_encode(new PlotCard('Forest', '1 Production and 1 commerce base value', 4, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $plotId,
-                'properties' => json_encode(new PlotCard('Hills', '1 Food and 1 production base value', 5)),
+                'properties' => json_encode(new PlotCard('Hills', '1 Food and 1 production base value', 5, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $plotId,
-                'properties' => json_encode(new PlotCard('River', '1 Food and 1 commerce base value', 6)),
+                'properties' => json_encode(new PlotCard('River', '1 Food and 1 commerce base value', 6, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
@@ -299,91 +299,91 @@ class CardSeeder extends Seeder
             //Technology cards
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Monotheism', 12, 'Doubles the effect of temples', 1)),
+                'properties' => json_encode(new TechnologyCard('Monotheism', 12, 'Doubles the effect of temples', 1, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Literature', 12, 'Grants 3 culture', 2)),
+                'properties' => json_encode(new TechnologyCard('Literature', 12, 'Grants 3 culture', 2, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Agriculture', 12, '+1 Food per turn from each granary', 3)),
+                'properties' => json_encode(new TechnologyCard('Agriculture', 12, '+1 Food per turn from each granary', 3, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Mining', 12, 'One-time bonus of 1 production per plot', 4)),
+                'properties' => json_encode(new TechnologyCard('Mining', 12, 'One-time bonus of 1 production per plot', 4, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Iron Working', 14, '+1 Production per turn from each forge', 5)),
+                'properties' => json_encode(new TechnologyCard('Iron Working', 14, '+1 Production per turn from each forge', 5, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Mathematics', 14, 'Catapults can defend against all units', 6)),
+                'properties' => json_encode(new TechnologyCard('Mathematics', 14, 'Catapults can defend against all units', 6, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Writing', 14, "Steal 1 random card from rival player's hand", 7)),
+                'properties' => json_encode(new TechnologyCard('Writing', 14, "Steal 1 random card from rival player's hand", 7, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('The Wheel', 14, "Draw 2 free cards", 8)),
+                'properties' => json_encode(new TechnologyCard('The Wheel', 14, "Draw 2 free cards", 8, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Pottery', 16, "Can spend 3 resources to draw 1 card each turn", 9)),
+                'properties' => json_encode(new TechnologyCard('Pottery', 16, "Can spend 3 resources to draw 1 card each turn", 9, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Sailing', 16, "Can trade 2 resources of one type for 1 resource of another type", 10)),
+                'properties' => json_encode(new TechnologyCard('Sailing', 16, "Can trade 2 resources of one type for 1 resource of another type", 10, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Masonry', 16, "-1 Building costs", 11)),
+                'properties' => json_encode(new TechnologyCard('Masonry', 16, "-1 Building costs", 11, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Currency', 16, "+1 Commerce per turn from each market", 12)),
+                'properties' => json_encode(new TechnologyCard('Currency', 16, "+1 Commerce per turn from each market", 12, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Code of Laws', 20, "Steal 3 resources from any 1 player", 13)),
+                'properties' => json_encode(new TechnologyCard('Code of Laws', 20, "Steal 3 resources from any 1 player", 13, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Engineering', 20, "All plots can house 2 buildings", 14)),
+                'properties' => json_encode(new TechnologyCard('Engineering', 20, "All plots can house 2 buildings", 14, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $technologyId,
-                'properties' => json_encode(new TechnologyCard('Astronomy', 24, "Draw 1 extra card per turn", 15)),
+                'properties' => json_encode(new TechnologyCard('Astronomy', 24, "Draw 1 extra card per turn", 15, 1)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],

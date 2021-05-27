@@ -8,11 +8,13 @@ class UnitCard implements JsonSerializable {
     private string $name;
     private string $specialEffect;
     private int $specialEffectId;
+    private int $maxCardsInDeck;
 
-    public function __construct($name, $specialEffect, $specialEffectId) {
+    public function __construct($name, $specialEffect, $specialEffectId, $maxCardsInDeck) {
         $this->name = $name;
         $this->specialEffect = $specialEffect;
         $this->specialEffectId = $specialEffectId;
+        $this->maxCardsInDeck = $maxCardsInDeck;
     }
 
     public function getName() {
@@ -25,6 +27,10 @@ class UnitCard implements JsonSerializable {
 
     public function getSpecialEffectId() {
         return $this->specialEffectId;
+    }
+
+    public function getMaxCardsInDeck() {
+        return $this->maxCardsInDeck;
     }
 
     public function jsonSerialize() {
