@@ -2,15 +2,17 @@
 
 namespace App\Classes;
 
-class PlotCard {
+use JsonSerializable;
+
+class PlotCard implements JsonSerializable {
     private string $name;
     private string $specialEffect;
     private int $specialEffectId;
 
     public function __construct($name, $specialEffect, $specialEffectId) {
-        $this->$name = $name;
-        $this->$specialEffect = $specialEffect;
-        $this->$specialEffectId = $specialEffectId;
+        $this->name = $name;
+        $this->specialEffect = $specialEffect;
+        $this->specialEffectId = $specialEffectId;
     }
 
     public function getName() {
@@ -23,5 +25,11 @@ class PlotCard {
 
     public function getSpecialEffectId() {
         return $this->specialEffectId;
+    }
+
+    public function jsonSerialize() {
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }
