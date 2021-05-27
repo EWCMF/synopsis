@@ -3,14 +3,20 @@
 namespace App\Classes;
 
 class BonusResourceCard {
+    private string $name;
     private string $resource;
     private int $count;
     private bool $isWild;
 
-    public function __construct($resource, $count, $isWild) {
+    public function __construct($name, $resource, $count, $isWild) {
+        $this->$name = $name;
         $this->$resource = $resource;
         $this->$count = $count;
         $this->$isWild = $isWild;
+    }
+
+    public function getName() {
+        return $this->name;
     }
 
     public function getResource() {

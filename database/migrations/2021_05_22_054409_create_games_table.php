@@ -15,7 +15,7 @@ class CreateGamesTable extends Migration
     {
         Schema::create('games', function (Blueprint $table) {
             $table->id();
-            $table->json('state');
+            $table->json('state')->nullable();
             $table->integer('max_players');
             $table->boolean('teams');
             $table->boolean('started');

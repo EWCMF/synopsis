@@ -6,9 +6,14 @@ class PopulationCard {
     private string $specialEffect;
     private int $specialEffectId;
 
-    public function __construct($specialEffect, $specialEffectId) {
+    public function __construct($name, $specialEffect, $specialEffectId) {
+        $this->$name = $name;
         $this->$specialEffect = $specialEffect;
         $this->$specialEffectId = $specialEffectId;
+    }
+
+    public function getName() {
+        return $this->name;
     }
 
     public function getSpecialEffect() {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Game;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -24,5 +25,26 @@ class HomeController extends Controller
     public function index()
     {
         return view('home');
+    }
+
+    public function newGame(Request $request) {
+        $type = $request->input('gameType');
+
+        $game = new Game();
+
+
+        switch ($type) {
+            case 1:
+                $game->max_players = 2;
+
+                break;
+
+            default:
+                # code...
+                break;
+        }
+        $game->save();
+
+        return 'test';
     }
 }

@@ -6,7 +6,8 @@ class ResourceCard {
     private string $resource;
     private int $count;
 
-    public function __construct($resource, $count) {
+    public function __construct($name, $resource, $count) {
+        $this->$name = $name;
         $this->$resource = $resource;
         $this->$count = $count;
     }
