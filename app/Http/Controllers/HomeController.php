@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\State;
 use App\Models\Game;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -28,23 +30,26 @@ class HomeController extends Controller
     }
 
     public function newGame(Request $request) {
+        $user = Auth::user();
         $type = $request->input('gameType');
 
         $game = new Game();
 
+        $state = new State();
+        $state->addPlayer($user->id);
+        $state->addActivePlayer($user->id);
+
+        $game->state = json_encode($state);
 
         switch ($type) {
             case 1:
                 $game->max_players = 2;
-
                 break;
-
             default:
                 # code...
                 break;
         }
         $game->save();
-
         return 'test';
     }
 }
