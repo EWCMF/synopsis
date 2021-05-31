@@ -25,7 +25,35 @@ class State implements JsonSerializable
     private int $maxHappinessPlayerId;
     private int $maxCulturePlayerId;
 
-    public function __construct()
+    public function __construct($json = null)
+    {
+        if ($json == null) {
+            $this->newState();
+        } else {
+            $this->set(json_decode($json, true));
+        }
+    }
+
+    public function addPlayer($playerId)
+    {
+        array_push($this->players, $playerId);
+    }
+
+    public function addActivePlayer($playerId)
+    {
+        array_push($this->activePlayers, $playerId);
+    }
+
+    public function removeActivePlayer($playerId)
+    {
+        $pos = array_search($playerId, $this->activePlayers);
+        if (!$pos) {
+            return;
+        }
+        unset($this->activePlayers[$pos]);
+    }
+
+    public function newState()
     {
         $plotId = DB::table('card_types')->where('name', 'Plot')->value('id');
         $resourceId = DB::table('card_types')->where('name', 'Resource')->value('id');
@@ -83,7 +111,6 @@ class State implements JsonSerializable
                     )
                 );
             }
-
         }
 
         $populationCards = Card::where('card_type_id', $populationId)->get();
@@ -170,20 +197,8 @@ class State implements JsonSerializable
         }
     }
 
-    public function addPlayer($playerId) {
-        array_push($this->players, $playerId);
-    }
-
-    public function addActivePlayer($playerId) {
-        array_push($this->activePlayers, $playerId);
-    }
-
-    public function removeActivePlayer($playerId) {
-        $pos = array_search($playerId, $this->activePlayers);
-        if (!$pos) {
-            return;
-        }
-        unset($this->activePlayers[$pos]);
+    public function set($data) {
+        foreach ($data AS $key => $value) $this->{$key} = $value;
     }
 
     public function jsonSerialize()

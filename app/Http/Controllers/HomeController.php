@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\State;
 use App\Models\Game;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,6 +51,13 @@ class HomeController extends Controller
                 break;
         }
         $game->save();
+        $game->users()->save($user);
         return 'test';
+    }
+
+    public function debugState($id) {
+        $game = Game::find($id);
+
+        dd(new State($game->state));
     }
 }

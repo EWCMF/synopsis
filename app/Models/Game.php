@@ -13,4 +13,8 @@ class Game extends Model
         'started' => false,
         'teams' => false,
     ];
+
+    public function users() {
+        return $this->belongsToMany(User::class);
+    }
 }
