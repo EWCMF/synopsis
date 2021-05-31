@@ -52,7 +52,7 @@ class HomeController extends Controller
         }
         $game->save();
         $game->users()->save($user);
-        return 'test';
+        return redirect('game/' + $game->id);
     }
 
     public function debugState($id) {
