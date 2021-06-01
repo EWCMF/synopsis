@@ -8,6 +8,8 @@ use JsonSerializable;
 
 class State implements JsonSerializable
 {
+    private $ownerId;
+
     private $players = array();
     private $order = array();
 
@@ -19,8 +21,10 @@ class State implements JsonSerializable
     private $discardPile = array();
 
     private $cardsOnHand = array();
-    private int $currentTurn;
+    private $currentTurn;
     private int $turnSequence;
+
+    private int $winnerId;
 
     private int $maxHappinessPlayerId;
     private int $maxCulturePlayerId;
@@ -44,33 +48,14 @@ class State implements JsonSerializable
 
     public function startGame()
     {
-        shuffle($this->playDeck, count($this->playDeck));
-        shuffle($this->techDeck, count($this->techDeck));
-        shuffle($this->plotDeck, count($this->plotDeck));
+        shuffle($this->playDeck);
+        shuffle($this->techDeck);
+        shuffle($this->plotDeck);
 
-        shuffle($this->players, count($this->players));
+        shuffle($this->players);
         $this->currentTurn = $this->players[1];
         $this->turnSequence = 5;
 
-    }
-
-    protected function shuffle($arr, $n)
-    {
-        // Start from the last element
-        // and swap one by one. We
-        // don't need to run for the
-        // first element that's why i > 0
-        for ($i = $n - 1; $i >= 0; $i--) {
-            // Pick a random index
-            // from 0 to i
-            $j = rand(0, $i + 1);
-
-            // Swap arr[i] with the
-            // element at random index
-            $tmp = $arr[$i];
-            $arr[$i] = $arr[$j];
-            $arr[$j] = $tmp;
-        }
     }
 
     public function newState()
@@ -227,5 +212,21 @@ class State implements JsonSerializable
         $vars = get_object_vars($this);
 
         return $vars;
+    }
+
+    public function setOwnerId($userId) {
+        $this->ownerId = $userId;
+    }
+
+    public function getOwnerId() {
+        return $this->ownerId;
+    }
+
+    public function getPlayers() {
+        return $this->players;
+    }
+
+    public function getCurrentTurn() {
+        return $this->currentTurn;
     }
 }

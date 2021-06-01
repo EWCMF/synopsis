@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Classes\State;
+use App\Events\GameStarted;
 use App\Events\PlayerJoined;
 use App\Models\Game;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,6 +39,7 @@ class GameController extends Controller
             'state' => $game->state,
             'maxPlayers' => $game->max_players,
             'started' => $game->started,
+            'userId' => $user->id,
         ]);
     }
 
@@ -74,6 +76,23 @@ class GameController extends Controller
         broadcast(new PlayerJoined($game->id, $state))->toOthers();
 
         return redirect('game/'.$game->id);
+    }
+
+    public function startGame(Request $request) {
+        $userId = $request->input('user_id');
+        $gameId = $request->input('game_id');
+
+        $game = Game::find($gameId);
+
+        $state = new State($game->state);
+        $state->startGame();
+        $game->state = json_encode($state);
+        $game->started = true;
+        $game->save();
+
+        broadcast(new GameStarted($gameId, $state));
+
+        return response()->noContent(200);
     }
 
     public function playerChangePlayingState(Request $request) {

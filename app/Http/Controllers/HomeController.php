@@ -38,6 +38,7 @@ class HomeController extends Controller
 
         $state = new State();
         $state->addPlayer($user->id, $user->name);
+        $state->setOwnerId($user->id);
 
         $game->state = json_encode($state);
 
@@ -58,5 +59,9 @@ class HomeController extends Controller
         $game = Game::find($id);
 
         dd(new State($game->state));
+    }
+
+    public function debugView() {
+        return view('debug');
     }
 }
