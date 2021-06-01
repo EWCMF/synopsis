@@ -1,4 +1,4 @@
-<div id="game-modal" class="modal" tabindex="-1">
+<div id="game-modal" class="modal modal-lg" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -8,7 +8,7 @@
           </button>
         </div>
         <div id="game-modal-body" class="modal-body">
-          
+
         </div>
       </div>
     </div>
