@@ -56,6 +56,12 @@ class State implements JsonSerializable
         $this->currentTurn = $this->players[1];
         $this->turnSequence = 5;
 
+        foreach ($this->players as $player) {
+           $this->cardsOnHand[$player->name] = [
+               array_pop($plotDeck),
+               array_pop($plotDeck),
+           ];
+        }
     }
 
     public function newState()
