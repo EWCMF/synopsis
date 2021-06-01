@@ -2,6 +2,7 @@
 
 use App\Models\Game;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +21,15 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 
 
 
-Broadcast::channel('game.{$id}', function ($user, $id) {
-    $game = Game::find($id);
+Broadcast::channel('game.{id}', function ($user, $id) {
+    $allowed = DB::table('game_user')->where([
+        'user_id' => $user->id,
+        'game_id' => $id,
+    ])->exists();
 
-    dd($game->users);
-
-    return false;
+    if ($allowed) {
+        return ['id' => $user->id, 'name' => $user->name];
+    } else {
+        false;
+    }
 });

@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Game;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -10,7 +11,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MakeMove implements ShouldBroadcast
+class NewMove implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -21,9 +22,9 @@ class MakeMove implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Game $game)
     {
-        //
+        $this->game = $game;
     }
 
     /**
@@ -33,6 +34,6 @@ class MakeMove implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('game.'.$this->game->id);
+        return new PresenceChannel('game.'.$this->game->id);
     }
 }

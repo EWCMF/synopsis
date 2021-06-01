@@ -16,7 +16,23 @@ class GameController extends Controller
 
     public function index($id)
     {
-        return view('game', ['id' => $id]);
+        $user = Auth::user();
+
+        $allowed = DB::table('game_user')->where([
+            'user_id' => $user->id,
+            'game_id' => $id,
+        ])->exists();
+
+        if (!$allowed) {
+            return 'Unauthorized access';
+        }
+
+        $game = Game::find($id);
+
+        return view('game', [
+            'id' => $id,
+            'game' => $game
+        ]);
     }
 
     public function listGames()

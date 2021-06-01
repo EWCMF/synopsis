@@ -13,14 +13,23 @@
                                 {{ session('status') }}
                             </div>
                         @endif
-
-                        {{ __('You are logged in!') }}
                     </div>
 
-                    <div>
-                        <button class="btn btn-primary" data-toggle="modal" data-target="#createNewGameModal">Create new
-                            game</button>
-                        <button class="btn btn-primary" onclick="window.location = '/game-list'">Join existing game</button>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-6 mb-5">
+                                <button class="btn btn-primary mt-3 btn-block" data-toggle="modal"
+                                    data-target="#createNewGameModal">Create new
+                                    game</button>
+
+                                <button class="btn btn-primary mt-3 btn-block" >Currently ongoing games</button>
+
+                                <button class="btn btn-primary mt-3 btn-block" onclick="window.location = '/game-list'">Join
+                                    existing game</button>
+
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
