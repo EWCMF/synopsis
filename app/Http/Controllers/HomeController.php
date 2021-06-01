@@ -37,7 +37,7 @@ class HomeController extends Controller
         $game = new Game();
 
         $state = new State();
-        $state->addPlayer($user->id);
+        $state->addPlayer($user->id, $user->name);
 
         $game->state = json_encode($state);
 

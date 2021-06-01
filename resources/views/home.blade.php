@@ -22,7 +22,7 @@
                                     data-target="#createNewGameModal">Create new
                                     game</button>
 
-                                <button class="btn btn-primary mt-3 btn-block" >Currently ongoing games</button>
+                                <button class="btn btn-primary mt-3 btn-block" onclick="window.location = '/user-game-list'" >Currently ongoing games</button>
 
                                 <button class="btn btn-primary mt-3 btn-block" onclick="window.location = '/game-list'">Join
                                     existing game</button>

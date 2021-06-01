@@ -17,6 +17,7 @@ class CreateGameUser extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('game_id')->constrained();
+            $table->boolean('playing')->default(false);
         });
     }
 

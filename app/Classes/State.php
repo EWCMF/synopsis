@@ -34,9 +34,12 @@ class State implements JsonSerializable
         }
     }
 
-    public function addPlayer($playerId)
+    public function addPlayer($playerId, $playerName)
     {
-        array_push($this->players, $playerId);
+        array_push($this->players, [
+            'id' => $playerId,
+            'name' => $playerName
+            ]);
     }
 
     public function startGame()

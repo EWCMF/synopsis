@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\State;
+use App\Events\PlayerJoined;
 use App\Models\Game;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +34,10 @@ class GameController extends Controller
 
         return view('game', [
             'id' => $id,
-            'game' => $game
+            'game' => $game,
+            'state' => $game->state,
+            'maxPlayers' => $game->max_players,
+            'started' => $game->started,
         ]);
     }
 
@@ -59,8 +65,30 @@ class GameController extends Controller
             return 'Game is full';
         }
 
+        $state = new State($game->state);
+        $state->addPlayer($user->id, $user->name);
+        $game->state = json_encode($state);
+        $game->save();
         $game->users()->save($user);
+
+        broadcast(new PlayerJoined($game->id, $state))->toOthers();
+
         return redirect('game/'.$game->id);
+    }
+
+    public function playerChangePlayingState(Request $request) {
+        $userId = $request->input('user_id');
+        $gameId = $request->input('game_id');
+        $isPlaying = $request->input('isPlaying');
+
+        DB::table('game_user')->where([
+            'user_id' => $userId,
+            'game_id' => $gameId,
+        ])->update([
+            'playing' => $isPlaying
+        ]);
+
+        return response()->noContent(200);
     }
 
     public function listGames()
@@ -76,6 +104,25 @@ class GameController extends Controller
 
         return view(
             'game-list',
+            [
+                'games' => $games
+            ]
+        );
+    }
+
+    public function listGamesUser() {
+        $user = Auth::user();
+
+        $joinedGames = DB::table('game_user')->where('user_id', $user->id)->value('game_id');
+
+        $games = Game::withCount(['users' => function (Builder $query) {
+            $query->where('playing', '=', true);
+        }])->where([
+            ['id', '=', $joinedGames],
+        ])->get();
+
+        return view(
+            'user-game-list',
             [
                 'games' => $games
             ]
