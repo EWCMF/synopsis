@@ -38,7 +38,6 @@ class HomeController extends Controller
 
         $state = new State();
         $state->addPlayer($user->id);
-        $state->addActivePlayer($user->id);
 
         $game->state = json_encode($state);
 
@@ -52,7 +51,7 @@ class HomeController extends Controller
         }
         $game->save();
         $game->users()->save($user);
-        return redirect('game/' + $game->id);
+        return redirect('game/'.$game->id);
     }
 
     public function debugState($id) {

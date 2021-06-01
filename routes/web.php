@@ -22,5 +22,6 @@ Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::post('/new-game', [HomeController::class, 'newGame']);
 Route::get('/game/{id}', [GameController::class, 'index']);
+Route::get('/join-game/{id}', [GameController::class, 'JoinGame']);
 Route::get('/game-list', [GameController::class, 'listGames']);
 Route::get('/debug-state/{id}', [HomeController::class, 'debugState']);

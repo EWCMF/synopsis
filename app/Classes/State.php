@@ -9,7 +9,7 @@ use JsonSerializable;
 class State implements JsonSerializable
 {
     private $players = array();
-    private $activePlayers = array();
+    private $order = array();
 
     private $playDeck = array();
     private $techDeck = array();
@@ -39,18 +39,35 @@ class State implements JsonSerializable
         array_push($this->players, $playerId);
     }
 
-    public function addActivePlayer($playerId)
+    public function startGame()
     {
-        array_push($this->activePlayers, $playerId);
+        shuffle($this->playDeck, count($this->playDeck));
+        shuffle($this->techDeck, count($this->techDeck));
+        shuffle($this->plotDeck, count($this->plotDeck));
+
+        shuffle($this->players, count($this->players));
+        $this->currentTurn = $this->players[1];
+        $this->turnSequence = 5;
+
     }
 
-    public function removeActivePlayer($playerId)
+    protected function shuffle($arr, $n)
     {
-        $pos = array_search($playerId, $this->activePlayers);
-        if (!$pos) {
-            return;
+        // Start from the last element
+        // and swap one by one. We
+        // don't need to run for the
+        // first element that's why i > 0
+        for ($i = $n - 1; $i >= 0; $i--) {
+            // Pick a random index
+            // from 0 to i
+            $j = rand(0, $i + 1);
+
+            // Swap arr[i] with the
+            // element at random index
+            $tmp = $arr[$i];
+            $arr[$i] = $arr[$j];
+            $arr[$j] = $tmp;
         }
-        unset($this->activePlayers[$pos]);
     }
 
     public function newState()
@@ -197,8 +214,9 @@ class State implements JsonSerializable
         }
     }
 
-    public function set($data) {
-        foreach ($data AS $key => $value) $this->{$key} = $value;
+    public function set($data)
+    {
+        foreach ($data as $key => $value) $this->{$key} = $value;
     }
 
     public function jsonSerialize()
