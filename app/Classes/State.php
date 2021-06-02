@@ -79,6 +79,43 @@ class State implements JsonSerializable
         ];
     }
 
+    public function pickCard($cardIndex, $deck, $userId) {
+        if ($userId != $this->currentTurn['id']) {
+            return false;
+        }
+
+        switch ($deck) {
+            case 'purchaseablePlots':
+                $card = $this->purchaseablePlots[$cardIndex];
+                array_push($this->cardsOnHand[$userId]['plots'], $card);
+                if ($this->turnSequence == 5) {
+                    $this->checkStartingPlots();
+                }
+                return true;
+            default:
+                # code...
+                break;
+        }
+    }
+
+    public function checkStartingPlots() {
+        $lastPlayer = end($this->players);
+        foreach ($this->players as $player) {
+            if ($player['id'] == $this->currentTurn['id']) {
+                if ($lastPlayer == $player) {
+                    $this->currentTurn = $this->players[0];
+                } else {
+                    $index = array_search($player, $this->players) + 1;
+                    $this->currentTurn = $this->players[$index];
+                }
+            }
+        }
+
+        if (empty($this->purchaseablePlots)) {
+            $this->turnSequence = 1;
+        }
+    }
+
     public function newState()
     {
         $plotId = DB::table('card_types')->where('name', 'Plot')->value('id');

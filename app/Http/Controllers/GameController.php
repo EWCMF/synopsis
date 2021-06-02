@@ -95,6 +95,27 @@ class GameController extends Controller
         return response()->noContent(200);
     }
 
+    public function makeMove(Request $request) {
+        $userId = $request->input('user_id');
+        $gameId = $request->input('game_id');
+        $cardIndex = $request->input('index');
+        $deck = $request->input('deck');
+
+        $game = Game::find($gameId);
+
+        $state = new State($game->state);
+
+        if ($state->pickCard($cardIndex, $deck, $userId)) {
+
+            $game->state = json_encode($state);
+            $game->save();
+
+            return response()->noContent(200);
+        } else {
+            return 'Error: not your turn';
+        }
+    }
+
     public function playerChangePlayingState(Request $request) {
         $userId = $request->input('user_id');
         $gameId = $request->input('game_id');
