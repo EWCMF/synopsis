@@ -4,31 +4,43 @@
             <div class="col-3">
                 <h5 class="mt-1">Resources</h5>
                 <div id="foeResources">
-                    @foreach ($foeHand['resources'] as $foeResource)
+                    @isset($foeHand)
+                        @foreach ($foeHand['resources'] as $foeResource)
 
-                    @endforeach
+                        @endforeach
+                    @endisset
+
                 </div>
             </div>
             <div class="col-3">
                 <h5 class="mt-1">Tech</h5>
                 <div id="foeTech">
-                    @foreach ($foeHand['techs'] as $foeTech)
+                    @isset($foeHand)
+                        @foreach ($foeHand['techs'] as $foeTech)
 
-                    @endforeach
+                        @endforeach
+                    @endisset
+
                 </div>
             </div>
             <div class="col-3">
                 <h5 class="mt-1">Plots</h5>
                 <div id="foePlots">
-                    @foreach ($foeHand['plots'] as $foePlot)
+                    @isset($foeHand)
+                        @foreach ($foeHand['plots'] as $foePlot)
 
-                    @endforeach
+                        @endforeach
+                    @endisset
+
                 </div>
             </div>
             <div class="col-3">
                 <h5 class="mt-1">Play cards</h5>
                 <div id="foePlayCards">
-                    {{ count($foeHand['hand']) }}
+                    @isset($foeHand)
+                        {{ count($foeHand['hand']) }}
+                    @endisset
+
                 </div>
             </div>
         </div>
@@ -36,8 +48,7 @@
     <div class="h-100">
         <div class="row h-100">
             <div class="col-2">
-                <div
-                    class="d-flex flex-column border h-100 justify-content-center align-items-center light-grey">
+                <div class="d-flex flex-column border h-100 justify-content-center align-items-center light-grey">
                     <h5>
                         Deck
                     </h5>
@@ -47,8 +58,7 @@
                 </div>
             </div>
             <div class="col-2 pl-0 pr-4">
-                <div
-                    class="d-flex flex-column border h-100 justify-content-center align-items-center light-grey">
+                <div class="d-flex flex-column border h-100 justify-content-center align-items-center light-grey">
                     <h5>
                         Discard pile
                     </h5>

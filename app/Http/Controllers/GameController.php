@@ -50,22 +50,20 @@ class GameController extends Controller
             'purchaseableTechs' => $state->getPurchaseableTechs(),
             'attacking' => $state->getAttacking(),
             'defending' => $state->getDefending(),
+            'currentTurn' => $state->getCurrentTurn(),
+            'turnSequence' => $state->getTurnSequence(),
         ];
 
         $cardsInHand = $state->getCardsInHand();
         switch ($game->max_players) {
             case 2:
-                $ownHand = array();
-                $foeHand = array();
                 foreach (array_keys($cardsInHand) as $key) {
                     if ($key == $user->id) {
-                        $ownHand = $cardsInHand[$key];
+                        $viewProperties['ownHand'] = $cardsInHand[$key];
                     } else {
-                        $foeHand = $cardsInHand[$key];
+                        $viewProperties['foeHand'] = $cardsInHand[$key];
                     }
                 }
-
-                array_push($viewProperties, $ownHand, $foeHand);
 
                 return view('game', $viewProperties);
                 break;
@@ -195,6 +193,35 @@ class GameController extends Controller
 
     public function requestPlotModal(Request $request)
     {
+        $userId = Auth::id();
+        $gameId = $request->input('game_id');
+
+        $allowed = DB::table('game_user')->where([
+            'user_id' => $userId,
+            'game_id' => $gameId,
+        ])->exists();
+
+        if (!$allowed) {
+            return response('Not authorized', 403);
+        }
+
+        $state = new State(Game::find($gameId)->state);
+        $cardsInHand = $state->getCardsInHand();
+
+        $viewProperties = [
+            'currentTurn' => $state->getCurrentTurn()['name'],
+            'selectionPlots' => $state->getPurchaseablePlots(),
+        ];
+
+        foreach (array_keys($cardsInHand) as $key) {
+            if ($key == $userId) {
+                $viewProperties['ownPlots'] = $cardsInHand[$key]['plots'];
+            } else {
+                $viewProperties['foePlots'] = $cardsInHand[$key]['plots'];
+            }
+        }
+
+        return view('modals.plot-modal', $viewProperties);
     }
 
     public function playerChangePlayingState(Request $request)

@@ -11,7 +11,9 @@
                     <div class="mt-3">
                         <h3>Players/Turn order</h3>
                         <div id="players">
-
+                            @foreach ($players as $player)
+                                <p>{{$player['name']}}</p>
+                            @endforeach
                         </div>
                     </div>
 
@@ -25,7 +27,11 @@
                     <div class="mt-3 flex-grow">
                         <h3>Current turn:</h3>
                         <div id="currentTurn">
+                            @if (isset($currentTurn))
+                            <p>{{$currentTurn['name']}}</p>
+                            @else
                             Game not started
+                            @endif
                         </div>
                     </div>
 
@@ -55,6 +61,7 @@
         let maxPlayers = +"{{ $maxPlayers }}";
         let userId = +"{{ $userId }}";
         let ownerId = +"{{ $ownerId }}";
+        let turnSequence = +"{{ $turnSequence }}"
         let usersCount;
         let gameStarting = false;
 
@@ -63,7 +70,7 @@
                 this.users = users;
                 usersCount = users.length;
                 updateOnline(this.users);
-                updatePlayers(state.players);
+                updatePlayers(users);
                 for (const user of users) {
                     updatePlayerStatusInDB(user.id, true);
                 }
@@ -95,12 +102,14 @@
                 addToLog('Game started. Shuffling deck and randomizing turn order.');
                 players = data.players;
                 updatePlayers(players);
-                changeCurrentTurn(data.currentTurn);
+                currentTurn = data.currentTurn.name
+                changeCurrentTurn();
                 initialGameState();
             })
             .listen('NewMove', (data) => {
                 requestCurrentGameView();
-                changeCurrentTurn(data.currentTurn);
+                currentTurn = data.currentTurn.name
+                changeCurrentTurn();
             });
 
     </script>

@@ -1,5 +1,5 @@
 function checkCanStart(usersOnline) {
-    if (state.players.length === maxPlayers &&
+    if (players.length === maxPlayers &&
         usersOnline === maxPlayers &&
         !started) {
         startGame();
@@ -12,7 +12,7 @@ function requestCurrentGameView() {
 
     xhr.onload = function () {
         if (xhr.status == 200) {
-            let response = JSON.parse(xhr.responseText);
+            let response = xhr.responseText;
             document.getElementById('gameArea').innerHTML = response;
         }
     }
@@ -26,7 +26,7 @@ function requestCurrentGameView() {
 }
 
 function checkMove(newState) {
-    switch (state.turnSequence) {
+    switch (turnSequence) {
         case 1:
 
             break;
@@ -40,8 +40,6 @@ function checkMove(newState) {
 
             break;
         case 5:
-            state = newState
-            fillPlotModal();
             break;
         default:
             break;
@@ -77,7 +75,7 @@ function initialGameState() {
 
     xhr.onload = function () {
         if (xhr.status == 200) {
-            let response = JSON.parse(xhr.responseText);
+            let response = xhr.responseText;
             document.getElementById('plot-modal-container').innerHTML = response;
 
             $('#plot-modal').modal({
@@ -116,7 +114,7 @@ function pickCard(index, deck) {
 };
 
 function changeCurrentTurn() {
-    document.getElementById('currentTurn').innerHTML = state.currentTurn.name;
+    document.getElementById('currentTurn').innerHTML = currentTurn;
 }
 
 function sleep(ms) {

@@ -26,8 +26,8 @@ class State implements JsonSerializable
     private $purchaseablePlots = array();
     private $purchaseableTechs = array();
 
-    private $attacking;
-    private $defending;
+    private $attacking = array();
+    private $defending = array();
 
     private int $winnerId;
 
@@ -62,8 +62,11 @@ class State implements JsonSerializable
     {
         shuffle($this->playDeck);
         shuffle($this->playDeck);
+        shuffle($this->playDeck);
         shuffle($this->techDeck);
         shuffle($this->techDeck);
+        shuffle($this->techDeck);
+        shuffle($this->plotDeck);
         shuffle($this->plotDeck);
         shuffle($this->plotDeck);
 
@@ -295,6 +298,15 @@ class State implements JsonSerializable
     public function getCurrentTurn()
     {
         return $this->currentTurn;
+    }
+
+    public function getTurnSequence()
+    {
+        if (isset($this->turnSequence)) {
+            return $this->turnSequence;
+        } else {
+            return null;
+        }
     }
 
     public function getCardsInHand()
