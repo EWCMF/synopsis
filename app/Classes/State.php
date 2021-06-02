@@ -24,6 +24,12 @@ class State implements JsonSerializable
     private $currentTurn;
     private int $turnSequence;
 
+    private $purchaseablePlots = array();
+    private $purchaseableTech = array();
+
+    private $attacking;
+    private $defending;
+
     private int $winnerId;
 
     private int $maxHappinessPlayerId;
@@ -61,11 +67,16 @@ class State implements JsonSerializable
 
         foreach ($this->players as $player) {
 
-            $this->cardsOnHand[$player['name']] = [
+            $this->cardsOnHand[$player['id']] = [
                 array_pop($this->plotDeck),
                 array_pop($this->plotDeck),
             ];
         }
+
+        $this->purchaseablePlots = [
+            array_pop($this->plotDeck),
+            array_pop($this->plotDeck),
+        ];
     }
 
     public function newState()

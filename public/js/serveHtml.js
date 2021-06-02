@@ -7,3 +7,7 @@ function serveCardHtml(card) {
          "</div>" +
     "</div>"
 }
+
+function servePlotHtml(card) {
+    return `<p class="m-0"><a class="text-light">${card.name}: ${card.specialEffect}</a></p>`;
+}

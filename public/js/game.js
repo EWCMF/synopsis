@@ -8,8 +8,8 @@ function checkCanStart(usersOnline) {
 }
 
 async function startGame() {
-    addToLog('Last player joined. Game starts in 15 seconds.');
-    await sleep(1000 * 1);
+    addToLog('Last player joined. Game starts in 10 seconds.');
+    await sleep(1000 * 10);
     if (usersCount != maxPlayers) {
         addToLog('Game start canceled. Player left the game.');
         return;
@@ -31,6 +31,22 @@ async function startGame() {
 }
 
 function initialGameState() {
+    document.getElementById('plot-modal-currentTurn').innerHTML = "Current turn: " + state.currentTurn.name;
+    for (const player of state.players) {
+        if (player.id == userId) {
+            for (const plot of state.cardsOnHand[userId]) {
+                document.getElementById('plot-modal-ownPlots').innerHTML += servePlotHtml(plot);
+            }
+        } else {
+            for (const plot of state.cardsOnHand[player.id]) {
+                document.getElementById('plot-modal-foePlots').innerHTML += servePlotHtml(plot);
+            }
+        }
+    }
+
+    for (const plot of state.purchaseablePlots) {
+        document.getElementById('plot-modal-selectionPlots').innerHTML += servePlotHtml(plot);
+    }
 
     $('#plot-modal').modal({
         backdrop: 'static',

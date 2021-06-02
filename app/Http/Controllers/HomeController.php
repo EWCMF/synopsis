@@ -59,6 +59,7 @@ class HomeController extends Controller
         $game = Game::find($id);
 
         $state = new State($game->state);
+        $state->startGame();
 
         dd($state);
     }

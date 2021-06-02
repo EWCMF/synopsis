@@ -33,23 +33,38 @@
                                         Deck
                                     </h5>
                                     <div id="deck">
-                                        (20)
+                                        (Number)
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-2">
+                            <div class="col-2 pl-0 pr-4">
                                 <div
                                     class="d-flex flex-column border h-100 justify-content-center align-items-center light-grey">
                                     <h5>
                                         Discard pile
                                     </h5>
                                     <div id="discardPile">
-                                        (20)
+                                        (Number)
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-3"></div>
-                            <div class="col-5">
+                            <div class="col-4">
+                                <div class="row w-100 h-100 border light-grey">
+                                    <div class="col-6 h-100 border-right">
+                                        <h5 class="mt-1">
+                                            Purchaseable plots
+                                        </h5>
+                                        <div id="purchaseablePlots"></div>
+                                    </div>
+                                    <div class="col-6">
+                                        <h5 class="mt-1">
+                                            Purchaseable tech
+                                        </h5>
+                                        <div id="purchaseableTech"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
                                 <div class="row w-100 h-100 border light-grey">
                                     <div class="col-6 h-100 border-right">
                                         <h5 class="mt-1">
