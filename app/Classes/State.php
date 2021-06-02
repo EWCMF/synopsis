@@ -24,7 +24,7 @@ class State implements JsonSerializable
     private int $turnSequence;
 
     private $purchaseablePlots = array();
-    private $purchaseableTech = array();
+    private $purchaseableTechs = array();
 
     private $attacking;
     private $defending;
@@ -45,10 +45,17 @@ class State implements JsonSerializable
 
     public function addPlayer($playerId, $playerName)
     {
-        array_push($this->players, [
+        $player = [
             'id' => $playerId,
-            'name' => $playerName
-        ]);
+            'name' => $playerName,
+        ];
+
+        array_push($this->players, $player);
+
+        $this->cardsOnHand[$player['id']]['plots'] = array();
+        $this->cardsOnHand[$player['id']]['techs'] = array();
+        $this->cardsOnHand[$player['id']]['resources'] = array();
+        $this->cardsOnHand[$player['id']]['hand'] = array();
     }
 
     public function startGame()
@@ -65,11 +72,6 @@ class State implements JsonSerializable
         $this->turnSequence = 5;
 
         foreach ($this->players as $player) {
-            $this->cardsOnHand[$player['id']]['plots'] = array();
-            $this->cardsOnHand[$player['id']]['techs'] = array();
-            $this->cardsOnHand[$player['id']]['resources'] = array();
-            $this->cardsOnHand[$player['id']]['hand'] = array();
-
             $this->cardsOnHand[$player['id']]['plots'] = [
                 array_pop($this->plotDeck),
                 array_pop($this->plotDeck),
@@ -293,5 +295,38 @@ class State implements JsonSerializable
     public function getCurrentTurn()
     {
         return $this->currentTurn;
+    }
+
+    public function getCardsInHand()
+    {
+        return $this->cardsOnHand;
+    }
+
+    public function getCarsInHandForUser($id) {
+        return $this->cardsOnHand[$id];
+    }
+
+    public function getPlayDeck() {
+        return $this->playDeck;
+    }
+
+    public function getDiscardPile() {
+        return $this->discardPile;
+    }
+
+    public function getPurchaseablePlots() {
+        return $this->purchaseablePlots;
+    }
+
+    public function getPurchaseableTechs() {
+        return $this->purchaseableTechs;
+    }
+
+    public function getAttacking() {
+        return $this->attacking;
+    }
+
+    public function getDefending() {
+        return $this->defending;
     }
 }

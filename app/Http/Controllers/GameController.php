@@ -34,17 +34,65 @@ class GameController extends Controller
 
         $game = Game::find($id);
 
-        return view('game', [
+        $state = new State($game->state);
+
+
+        $viewProperties = [
             'id' => $id,
-            'game' => $game,
-            'state' => $game->state,
+            'players' => $state->getPlayers(),
             'maxPlayers' => $game->max_players,
             'started' => $game->started,
             'userId' => $user->id,
+            'ownerId' => $state->getOwnerId(),
+            'deckLength' => count($state->getPlayDeck()),
+            'discardPileLength' => count($state->getDiscardPile()),
+            'purchaseablePlots' => $state->getPurchaseablePlots(),
+            'purchaseableTechs' => $state->getPurchaseableTechs(),
+            'attacking' => $state->getAttacking(),
+            'defending' => $state->getDefending(),
+        ];
+
+        $cardsInHand = $state->getCardsInHand();
+        switch ($game->max_players) {
+            case 2:
+                $ownHand = array();
+                $foeHand = array();
+                foreach (array_keys($cardsInHand) as $key) {
+                    if ($key == $user->id) {
+                        $ownHand = $cardsInHand[$key];
+                    } else {
+                        $foeHand = $cardsInHand[$key];
+                    }
+                }
+
+                array_push($viewProperties, $ownHand, $foeHand);
+
+                return view('game', $viewProperties);
+                break;
+
+            case 3:
+
+
+            case 4:
+
+
+            default:
+                break;
+        }
+
+
+        return view('game', [
+            'id' => $id,
+            'players' => $state->getPlayers(),
+            'maxPlayers' => $game->max_players,
+            'started' => $game->started,
+            'userId' => $user->id,
+            'ownerId' => $state->getOwnerId()
         ]);
     }
 
-    public function joinGame($id) {
+    public function joinGame($id)
+    {
         $user = Auth::user();
 
         $alreadyJoined = DB::table('game_user')->where([
@@ -76,12 +124,22 @@ class GameController extends Controller
 
         broadcast(new PlayerJoined($game->id, $state))->toOthers();
 
-        return redirect('game/'.$game->id);
+        return redirect('game/' . $game->id);
     }
 
-    public function startGame(Request $request) {
+    public function startGame(Request $request)
+    {
         $userId = $request->input('user_id');
         $gameId = $request->input('game_id');
+
+        $allowed = DB::table('game_user')->where([
+            'user_id' => $userId,
+            'game_id' => $gameId,
+        ])->exists();
+
+        if (!$allowed) {
+            return response('Not authorized', 403);
+        }
 
         $game = Game::find($gameId);
 
@@ -96,7 +154,8 @@ class GameController extends Controller
         return response()->noContent(200);
     }
 
-    public function makeMove(Request $request) {
+    public function makeMove(Request $request)
+    {
         $userId = $request->input('user_id');
         $gameId = $request->input('game_id');
         $cardIndex = $request->input('index');
@@ -119,7 +178,27 @@ class GameController extends Controller
         }
     }
 
-    public function playerChangePlayingState(Request $request) {
+    public function requestCurrentView(Request $request)
+    {
+        $userId = Auth::id();
+        $gameId = $request->input('game_id');
+
+        $allowed = DB::table('game_user')->where([
+            'user_id' => $userId,
+            'game_id' => $gameId,
+        ])->exists();
+
+        if (!$allowed) {
+            return response('Not authorized', 403);
+        }
+    }
+
+    public function requestPlotModal(Request $request)
+    {
+    }
+
+    public function playerChangePlayingState(Request $request)
+    {
         $userId = $request->input('user_id');
         $gameId = $request->input('game_id');
         $isPlaying = $request->input('isPlaying');
@@ -153,7 +232,8 @@ class GameController extends Controller
         );
     }
 
-    public function listGamesUser() {
+    public function listGamesUser()
+    {
         $user = Auth::user();
 
         $joinedGames = DB::table('game_user')->where('user_id', $user->id)->value('game_id');

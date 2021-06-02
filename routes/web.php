@@ -28,5 +28,7 @@ Route::get('/user-game-list', [GameController::class, 'listGamesUser']);
 Route::post('/change-playing-state', [GameController::class, 'playerChangePlayingState']);
 Route::post('/start-game', [GameController::class, 'startGame']);
 Route::post('/make-move', [GameController::class, 'makeMove']);
+Route::post('/request-current-view', [GameController::class, 'requestCurrentView']);
+Route::post('/request-plot-modal', [GameController::class, 'requestPlotModal']);
 Route::get('/debug-state/{id}', [HomeController::class, 'debugState']);
 Route::get('/debug-view', [HomeController::class, 'debugView']);

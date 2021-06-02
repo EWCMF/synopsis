@@ -14,19 +14,26 @@
                     <div class="col-4">
                         <h5>Your plots</h5>
                         <div id="plot-modal-ownPlots">
+                            @foreach ($ownplots as $ownPlot)
+
+                            @endforeach
                             {{-- <p class="m-0"><a class="text-light">Coast: 2 Commerce base value</a></p> --}}
                         </div>
                     </div>
                     <div class="col-4">
                         <h5>Selection</h5>
                         <div id="plot-modal-selectionPlots">
+                            @foreach ($selectionPlots as $selectionPlot)
 
+                            @endforeach
                         </div>
                     </div>
                     <div class="col-4">
                         <h5>Foe plots</h5>
                         <div id="plot-modal-foePlots">
-                            
+                            @foreach ($foePlots as $foePlots)
+
+                            @endforeach
                         </div>
                     </div>
                 </div>

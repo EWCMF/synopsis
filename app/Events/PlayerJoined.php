@@ -40,6 +40,6 @@ class PlayerJoined implements ShouldBroadcast
 
     public function broadcastWith()
     {
-        return ['state' => $this->state];
+        return ['newPlayers' => $this->state->getPlayers()];
     }
 }

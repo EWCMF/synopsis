@@ -1,10 +1,28 @@
 function checkCanStart(usersOnline) {
-
     if (state.players.length === maxPlayers &&
         usersOnline === maxPlayers &&
         !started) {
         startGame();
     }
+}
+
+function requestCurrentGameView() {
+    let xhr = new XMLHttpRequest();
+    let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            let response = JSON.parse(xhr.responseText);
+            document.getElementById('gameArea').innerHTML = response;
+        }
+    }
+
+    xhr.open('POST', '/request-current-view');
+    xhr.setRequestHeader("X-CSRF-Token", csrf);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        'game_id': id,
+    }));
 }
 
 function checkMove(newState) {
@@ -34,7 +52,7 @@ async function startGame() {
     addToLog('Last player joined. Game starts in 10 seconds.');
     await sleep(1000 * 10);
     if (usersCount != maxPlayers) {
-        addToLog('Game start canceled. Player left the game.');
+        addToLog('Game start cancelled. Player left the game.');
         return;
     }
 
@@ -54,51 +72,34 @@ async function startGame() {
 }
 
 function initialGameState() {
-    fillPlotModal();
+    let xhr = new XMLHttpRequest();
+    let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    $('#plot-modal').modal({
-        backdrop: 'static',
-        keyboard: false
-    });
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            let response = JSON.parse(xhr.responseText);
+            document.getElementById('plot-modal-container').innerHTML = response;
 
-    $('#plot-modal').modal('show');
-}
+            $('#plot-modal').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
 
-function fillPlotModal() {
-    document.getElementById('plot-modal-ownPlots').innerHTML = '';
-    document.getElementById('plot-modal-foePlots').innerHTML = '';
-    document.getElementById('plot-modal-selectionPlots').innerHTML = '';
-
-    document.getElementById('plot-modal-currentTurn').innerHTML = "Current turn: " + state.currentTurn.name;
-    for (const player of state.players) {
-        if (player.id == userId) {
-            for (const plot of state.cardsOnHand[userId]) {
-                document.getElementById('plot-modal-ownPlots').innerHTML += serveCardHtml(plot);
-            }
-        } else {
-            for (const plot of state.cardsOnHand[player.id]) {
-                document.getElementById('plot-modal-foePlots').innerHTML += serveCardHtml(plot);
-            }
+            $('#plot-modal').modal('show');
         }
     }
 
-    for (let index = 0; index < state.purchaseablePlots.length; index++) {
-        const element = state.purchaseablePlots[index];
-        document.getElementById('plot-modal-selectionPlots').innerHTML += serveSelectablePlotHtml(element, index);
-    }
+    xhr.open('POST', '/request-plot-modal');
+    xhr.setRequestHeader("X-CSRF-Token", csrf);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        'user_id': userId,
+        'game_id': id,
+    }));
 }
 
 function pickCard(index, deck) {
-    if (state.currentTurn.id == userId) {
-        // document.getElementById('selectablePlot' + index).remove();
-        // document.getElementById('plot-modal-ownPlots').innerHTML += serveCardHtml(state[deck][index]);
-
-        // for( let i = 0; i < state[deck].length; i++){
-        //     if ( state[deck][i] === index) {
-
-        //         state[deck].splice(i, 1);
-        //     }
-        // }
+    if (currentTurn.id == userId) {
         let xhr = new XMLHttpRequest();
         let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -111,10 +112,7 @@ function pickCard(index, deck) {
             'cardIndex': index,
             'deck': deck
         }));
-
     }
-
-
 };
 
 function changeCurrentTurn() {

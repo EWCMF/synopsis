@@ -40,6 +40,9 @@ class GameStarted implements ShouldBroadcast
 
     public function broadcastWith()
     {
-        return ['state' => $this->state];
+        return [
+            'players' => $this->state->getPlayers(),
+            'currentTurn' => $this->state->getCurrentTurn(),
+        ];
     }
 }
