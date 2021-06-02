@@ -195,6 +195,10 @@
                 updatePlayers(state.players);
                 changeCurrentTurn();
                 initialGameState();
+            })
+            .listen('NewMove', (newState) => {
+                checkMove(newState.state);
+                changeCurrentTurn();
             });
 
     </script>

@@ -5,7 +5,6 @@ namespace App\Classes;
 use App\Models\Card;
 use Illuminate\Support\Facades\DB;
 use JsonSerializable;
-use Symfony\Component\Console\Output\ConsoleOutput;
 
 class State implements JsonSerializable
 {
@@ -66,8 +65,12 @@ class State implements JsonSerializable
         $this->turnSequence = 5;
 
         foreach ($this->players as $player) {
+            $this->cardsOnHand[$player['id']]['plots'] = array();
+            $this->cardsOnHand[$player['id']]['techs'] = array();
+            $this->cardsOnHand[$player['id']]['resources'] = array();
+            $this->cardsOnHand[$player['id']]['hand'] = array();
 
-            $this->cardsOnHand[$player['id']] = [
+            $this->cardsOnHand[$player['id']]['plots'] = [
                 array_pop($this->plotDeck),
                 array_pop($this->plotDeck),
             ];

@@ -7,6 +7,29 @@ function checkCanStart(usersOnline) {
     }
 }
 
+function checkMove(newState) {
+    switch (state.turnSequence) {
+        case 1:
+
+            break;
+        case 2:
+
+            break;
+        case 3:
+
+            break;
+        case 4:
+
+            break;
+        case 5:
+            state = newState
+            fillPlotModal();
+            break;
+        default:
+            break;
+    }
+}
+
 async function startGame() {
     addToLog('Last player joined. Game starts in 10 seconds.');
     await sleep(1000 * 10);
@@ -42,6 +65,10 @@ function initialGameState() {
 }
 
 function fillPlotModal() {
+    document.getElementById('plot-modal-ownPlots').innerHTML = '';
+    document.getElementById('plot-modal-foePlots').innerHTML = '';
+    document.getElementById('plot-modal-selectionPlots').innerHTML = '';
+
     document.getElementById('plot-modal-currentTurn').innerHTML = "Current turn: " + state.currentTurn.name;
     for (const player of state.players) {
         if (player.id == userId) {

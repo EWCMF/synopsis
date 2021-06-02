@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\State;
 use App\Events\GameStarted;
+use App\Events\NewMove;
 use App\Events\PlayerJoined;
 use App\Models\Game;
 use Illuminate\Database\Eloquent\Builder;
@@ -109,6 +110,8 @@ class GameController extends Controller
 
             $game->state = json_encode($state);
             $game->save();
+
+            broadcast(new NewMove($gameId, $state));
 
             return response()->noContent(200);
         } else {

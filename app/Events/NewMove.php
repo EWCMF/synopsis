@@ -15,16 +15,18 @@ class NewMove implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $game;
+    public $state;
+    protected $id;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Game $game)
+    public function __construct($id, $state)
     {
-        $this->game = $game;
+        $this->state = $state;
+        $this->id = $id;
     }
 
     /**
@@ -34,6 +36,11 @@ class NewMove implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PresenceChannel('game.'.$this->game->id);
+        return new PresenceChannel('game.'.$this->id);
+    }
+
+    public function broadcastWith()
+    {
+        return ['state' => $this->state];
     }
 }
