@@ -9,7 +9,7 @@ function checkCanStart(usersOnline) {
 
 async function startGame() {
     addToLog('Last player joined. Game starts in 15 seconds.');
-    await sleep(1000 * 15);
+    await sleep(1000 * 1);
     if (usersCount != maxPlayers) {
         addToLog('Game start canceled. Player left the game.');
         return;
@@ -31,14 +31,13 @@ async function startGame() {
 }
 
 function initialGameState() {
-    document.getElementById('game-modal-body').innerHTML = serveCardHtml('test');
 
-    $('#game-modal').modal({
+    $('#plot-modal').modal({
         backdrop: 'static',
         keyboard: false
     });
 
-    $("#game-modal").modal('show');
+    $('#plot-modal').modal('show');
 }
 
 function changeCurrentTurn() {

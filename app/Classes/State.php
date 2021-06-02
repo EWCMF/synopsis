@@ -5,13 +5,13 @@ namespace App\Classes;
 use App\Models\Card;
 use Illuminate\Support\Facades\DB;
 use JsonSerializable;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class State implements JsonSerializable
 {
     private $ownerId;
 
     private $players = array();
-    private $order = array();
 
     private $playDeck = array();
     private $techDeck = array();
@@ -43,13 +43,16 @@ class State implements JsonSerializable
         array_push($this->players, [
             'id' => $playerId,
             'name' => $playerName
-            ]);
+        ]);
     }
 
     public function startGame()
     {
         shuffle($this->playDeck);
+        shuffle($this->playDeck);
         shuffle($this->techDeck);
+        shuffle($this->techDeck);
+        shuffle($this->plotDeck);
         shuffle($this->plotDeck);
 
         shuffle($this->players);
@@ -57,10 +60,11 @@ class State implements JsonSerializable
         $this->turnSequence = 5;
 
         foreach ($this->players as $player) {
-           $this->cardsOnHand[$player->name] = [
-               array_pop($plotDeck),
-               array_pop($plotDeck),
-           ];
+
+            $this->cardsOnHand[$player['name']] = [
+                array_pop($this->plotDeck),
+                array_pop($this->plotDeck),
+            ];
         }
     }
 
@@ -220,19 +224,23 @@ class State implements JsonSerializable
         return $vars;
     }
 
-    public function setOwnerId($userId) {
+    public function setOwnerId($userId)
+    {
         $this->ownerId = $userId;
     }
 
-    public function getOwnerId() {
+    public function getOwnerId()
+    {
         return $this->ownerId;
     }
 
-    public function getPlayers() {
+    public function getPlayers()
+    {
         return $this->players;
     }
 
-    public function getCurrentTurn() {
+    public function getCurrentTurn()
+    {
         return $this->currentTurn;
     }
 }

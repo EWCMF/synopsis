@@ -126,7 +126,10 @@
     </div>
 
     @include('modals.game-modal')
+    @include('modals.plot-modal')
 
+    <script src="{{ asset('js/game.js') }}"></script>
+    <script src="{{ asset('js/serveHtml.js') }}"></script>
     <script defer>
         const Echo = window.Echo;
         const id = "{{ $id }}";
@@ -172,7 +175,7 @@
                 updatePlayers(state.players);
             })
             .listen('GameStarted', (newState) => {
-                addToLog('Game started. Shuffling deck and randomizing turn order');
+                addToLog('Game started. Shuffling deck and randomizing turn order.');
                 state = newState.state;
                 updatePlayers(state.players);
                 changeCurrentTurn();
@@ -180,7 +183,5 @@
             });
 
     </script>
-    <script defer src="{{ asset('js/game.js') }}"></script>
-    <script defer src="{{ asset('js/serveHtml.js') }}"></script>
 
 @endsection

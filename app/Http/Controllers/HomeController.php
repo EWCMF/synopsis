@@ -58,10 +58,12 @@ class HomeController extends Controller
     public function debugState($id) {
         $game = Game::find($id);
 
-        dd(new State($game->state));
+        $state = new State($game->state);
+
+        dd($state);
     }
 
     public function debugView() {
-        return view('debug');
+        return view('debug2');
     }
 }
