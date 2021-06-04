@@ -139,7 +139,7 @@
                 <h5 class="mt-1">Plots</h5>
                 <div id="ownPlots">
                     @foreach ($ownHand['plots'] as $ownPlot)
-
+                    
                     @endforeach
                 </div>
             </div>

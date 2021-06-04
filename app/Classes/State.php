@@ -96,7 +96,7 @@ class State implements JsonSerializable
 
         switch ($deck) {
             case 'purchaseablePlots':
-                $card = array_splice($this->purchaseablePlots, $this->purchaseablePlots[$cardIndex], 1);
+                $card = array_splice($this->purchaseablePlots, $cardIndex, 1);
                 array_push($this->cardsOnHand[$userId]['plots'], $card[0]);
                 if ($this->turnSequence == 5) {
                     $this->checkStartingPlots();

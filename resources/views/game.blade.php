@@ -49,7 +49,13 @@
     </div>
 
     @include('modals.game-modal')
-    <div id="plot-modal-container"></div>
+    <div id="plot-modal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content light-grey" id="modal-content"></div>
+        </div>
+    </div>
+
+
 
     <script src="{{ asset('js/game.js') }}"></script>
     <script defer>
@@ -69,7 +75,7 @@
         let usersCount;
         let gameStarting = false;
 
-        
+
         Echo.join(`game.${id}`)
             .here((users) => {
                 this.users = users;
@@ -108,17 +114,16 @@
                 players = data.players;
                 updatePlayers(players);
                 currentTurn = data.currentTurn;
+                turnSequence = 5;
                 changeCurrentTurn();
                 requestPlotModal();
             })
             .listen('NewMove', (data) => {
                 addToLog(data.log);
                 requestCurrentGameView();
+                checkMove();
                 currentTurn = data.currentTurn;
                 turnSequence = data.turnSequence;
-                if (turnSequence == 5) {
-                    requestPlotModal();
-                }
                 changeCurrentTurn();
             });
 

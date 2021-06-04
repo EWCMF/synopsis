@@ -154,7 +154,7 @@ class GameController extends Controller
 
     public function makeMove(Request $request)
     {
-        $userId = $request->input('user_id');
+        $userId = Auth::id();
         $gameId = $request->input('game_id');
         $cardIndex = $request->input('index');
         $deck = $request->input('deck');
@@ -268,7 +268,7 @@ class GameController extends Controller
             }
         }
 
-        return view('modals.plot-modal', $viewProperties);
+        return view('modals.plot-modal-content', $viewProperties);
     }
 
     public function playerChangePlayingState(Request $request)

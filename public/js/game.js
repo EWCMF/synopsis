@@ -25,7 +25,7 @@ function requestCurrentGameView() {
     }));
 }
 
-function checkMove(newState) {
+function checkMove() {
     switch (turnSequence) {
         case 1:
 
@@ -40,6 +40,7 @@ function checkMove(newState) {
 
             break;
         case 5:
+            requestPlotModal();
             break;
         default:
             break;
@@ -76,14 +77,29 @@ function requestPlotModal() {
     xhr.onload = function () {
         if (xhr.status == 200) {
             let response = xhr.responseText;
-            document.getElementById('plot-modal-container').innerHTML = response;
+            document.getElementById('modal-content').innerHTML = response;
 
-            $('#plot-modal').modal({
-                backdrop: 'static',
-                keyboard: false
-            });
+            if (!$('#plot-modal').hasClass('show')) {
+                $('#plot-modal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
 
-            $('#plot-modal').modal('show');
+                $('#plot-modal').modal('show');
+                return;
+            }
+
+            if (document.getElementById('plot-modal-selectionPlots').childElementCount == 0) {
+                $('#plot-modal').on('hidden.bs.modal', function (e) {
+                    window.requestPlotModal = function() {
+                        return false;
+                    }
+
+                    document.getElementById('plot-modal').remove();
+                })
+
+                $("#plot-modal").modal("hide");
+            }
         }
     }
 
@@ -96,31 +112,12 @@ function requestPlotModal() {
     }));
 }
 
-function pickCard(index, deck) {
+function pickCard(cardIndex, deck) {
     if (currentTurn['id'] != userId) {
         alert("It's not your turn");
         return;
     }
 
-    let xhr = new XMLHttpRequest();
-    let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-    xhr.open('POST', '/make-move');
-    xhr.setRequestHeader("X-CSRF-Token", csrf);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({
-        'game_id': id,
-        'cardIndex': index,
-        'deck': deck
-    }));
-};
-
-function pickPlotCard(cardIndex) {
-    if (currentTurn['id'] != userId) {
-        alert("It's not your turn");
-        return;
-    }
-    
     let xhr = new XMLHttpRequest();
     let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -132,7 +129,7 @@ function pickPlotCard(cardIndex) {
         'cardIndex': cardIndex,
         'deck': deck
     }));
-}
+};
 
 function changeCurrentTurn() {
     document.getElementById('currentTurn').innerHTML = currentTurn.name;
