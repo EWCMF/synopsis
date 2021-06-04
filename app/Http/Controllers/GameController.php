@@ -189,6 +189,53 @@ class GameController extends Controller
         if (!$allowed) {
             return response('Not authorized', 403);
         }
+
+        $game = Game::find($gameId);
+
+        $state = new State($game->state);
+
+
+        $viewProperties = [
+            'id' => $gameId,
+            'players' => $state->getPlayers(),
+            'maxPlayers' => $game->max_players,
+            'started' => $game->started,
+            'userId' => $userId,
+            'ownerId' => $state->getOwnerId(),
+            'deckLength' => count($state->getPlayDeck()),
+            'discardPileLength' => count($state->getDiscardPile()),
+            'purchaseablePlots' => $state->getPurchaseablePlots(),
+            'purchaseableTechs' => $state->getPurchaseableTechs(),
+            'attacking' => $state->getAttacking(),
+            'defending' => $state->getDefending(),
+            'currentTurn' => $state->getCurrentTurn(),
+            'turnSequence' => $state->getTurnSequence(),
+        ];
+
+        $cardsInHand = $state->getCardsInHand();
+        switch ($game->max_players) {
+            case 2:
+                foreach (array_keys($cardsInHand) as $key) {
+                    if ($key == $userId) {
+                        $viewProperties['ownHand'] = $cardsInHand[$key];
+                    } else {
+                        $viewProperties['foeHand'] = $cardsInHand[$key];
+                    }
+                }
+
+                return view('partials.game-area', $viewProperties);
+                break;
+
+            case 3:
+
+
+            case 4:
+
+
+            default:
+            return response('Error', 404);
+                break;
+        }
     }
 
     public function requestPlotModal(Request $request)

@@ -52,7 +52,6 @@
     <div id="plot-modal-container"></div>
 
     <script src="{{ asset('js/game.js') }}"></script>
-    <script src="{{ asset('js/serveHtml.js') }}"></script>
     <script defer>
         const Echo = window.Echo;
         const id = "{{ $id }}";
@@ -61,10 +60,16 @@
         let maxPlayers = +"{{ $maxPlayers }}";
         let userId = +"{{ $userId }}";
         let ownerId = +"{{ $ownerId }}";
-        let turnSequence = +"{{ $turnSequence }}"
+        @if ($currentTurn)
+        let currentTurn = @json($currentTurn);
+        @else
+        let currentTurn = null;
+        @endif
+        let turnSequence = +"{{ $turnSequence }}";
         let usersCount;
         let gameStarting = false;
 
+        
         Echo.join(`game.${id}`)
             .here((users) => {
                 this.users = users;
@@ -102,13 +107,18 @@
                 addToLog('Game started. Shuffling deck and randomizing turn order.');
                 players = data.players;
                 updatePlayers(players);
-                currentTurn = data.currentTurn.name
+                currentTurn = data.currentTurn;
                 changeCurrentTurn();
-                initialGameState();
+                requestPlotModal();
             })
             .listen('NewMove', (data) => {
+                addToLog(data.log);
                 requestCurrentGameView();
-                currentTurn = data.currentTurn.name
+                currentTurn = data.currentTurn;
+                turnSequence = data.turnSequence;
+                if (turnSequence == 5) {
+                    requestPlotModal();
+                }
                 changeCurrentTurn();
             });
 

@@ -34,6 +34,8 @@ class State implements JsonSerializable
     private int $maxHappinessPlayerId;
     private int $maxCulturePlayerId;
 
+    private $currentMessageToLog;
+
     public function __construct($json = null)
     {
         if ($json == null) {
@@ -94,15 +96,17 @@ class State implements JsonSerializable
 
         switch ($deck) {
             case 'purchaseablePlots':
-                $card = $this->purchaseablePlots[$cardIndex];
-                array_push($this->cardsOnHand[$userId]['plots'], $card);
+                $card = array_splice($this->purchaseablePlots, $this->purchaseablePlots[$cardIndex], 1);
+                array_push($this->cardsOnHand[$userId]['plots'], $card[0]);
                 if ($this->turnSequence == 5) {
                     $this->checkStartingPlots();
+                } else {
+                    $this->currentMessageToLog = '';
                 }
+
                 return true;
             default:
-                # code...
-                break;
+                return false;
         }
     }
 
@@ -121,6 +125,9 @@ class State implements JsonSerializable
 
         if (empty($this->purchaseablePlots)) {
             $this->turnSequence = 1;
+            $this->currentMessageToLog = 'All starting plots selected, game can begin';
+        } else {
+            $this->currentMessageToLog = 'Starting plot selected. Current turn is now: ' . $player['name'];
         }
     }
 
@@ -297,16 +304,12 @@ class State implements JsonSerializable
 
     public function getCurrentTurn()
     {
-        return $this->currentTurn;
+        return isset($this->currentTurn) ? $this->currentTurn : null;
     }
 
     public function getTurnSequence()
     {
-        if (isset($this->turnSequence)) {
-            return $this->turnSequence;
-        } else {
-            return null;
-        }
+        return isset($this->turnSequence) ? $this->turnSequence : 0;
     }
 
     public function getCardsInHand()
@@ -340,5 +343,9 @@ class State implements JsonSerializable
 
     public function getDefending() {
         return $this->defending;
+    }
+
+    public function getCurrentMessageToLog() {
+        return $this->currentMessageToLog;
     }
 }

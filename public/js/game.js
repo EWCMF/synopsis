@@ -69,7 +69,7 @@ async function startGame() {
     }
 }
 
-function initialGameState() {
+function requestPlotModal() {
     let xhr = new XMLHttpRequest();
     let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -97,24 +97,45 @@ function initialGameState() {
 }
 
 function pickCard(index, deck) {
-    if (currentTurn.id == userId) {
-        let xhr = new XMLHttpRequest();
-        let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        xhr.open('POST', '/make-move');
-        xhr.setRequestHeader("X-CSRF-Token", csrf);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify({
-            'user_id': userId,
-            'game_id': id,
-            'cardIndex': index,
-            'deck': deck
-        }));
+    if (currentTurn['id'] != userId) {
+        alert("It's not your turn");
+        return;
     }
+
+    let xhr = new XMLHttpRequest();
+    let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    xhr.open('POST', '/make-move');
+    xhr.setRequestHeader("X-CSRF-Token", csrf);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        'game_id': id,
+        'cardIndex': index,
+        'deck': deck
+    }));
 };
 
+function pickPlotCard(cardIndex) {
+    if (currentTurn['id'] != userId) {
+        alert("It's not your turn");
+        return;
+    }
+    
+    let xhr = new XMLHttpRequest();
+    let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    xhr.open('POST', '/make-move');
+    xhr.setRequestHeader("X-CSRF-Token", csrf);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        'game_id': id,
+        'cardIndex': cardIndex,
+        'deck': deck
+    }));
+}
+
 function changeCurrentTurn() {
-    document.getElementById('currentTurn').innerHTML = currentTurn;
+    document.getElementById('currentTurn').innerHTML = currentTurn.name;
 }
 
 function sleep(ms) {

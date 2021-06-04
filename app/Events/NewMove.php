@@ -41,6 +41,10 @@ class NewMove implements ShouldBroadcast
 
     public function broadcastWith()
     {
-        return ['state' => $this->state];
+        return [
+            'log' => $this->state->getCurrentMessageToLog(),
+            'currentTurn' => $this->state->getCurrentTurn(),
+            'turnSequence' => $this->state->getTurnSequence(),
+        ];
     }
 }
