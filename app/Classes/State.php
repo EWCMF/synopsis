@@ -124,7 +124,25 @@ class State implements JsonSerializable
         }
 
         if (empty($this->purchaseablePlots)) {
-            $this->turnSequence = 1;
+            $this->turnSequence = 6;
+            array_push($this->purchaseablePlots,
+                array_pop($this->plotDeck),
+                array_pop($this->plotDeck),
+                array_pop($this->plotDeck));
+
+            array_push($this->purchaseableTechs,
+                array_pop($this->techDeck),
+                array_pop($this->techDeck),
+                array_pop($this->techDeck));
+
+            $cardsToDraw = 6;
+            foreach ($this->players as $player) {
+                for ($i = 0; $i < $cardsToDraw; $i++) {
+                    array_push($this->cardsOnHand[$player['id']]['hand'], array_pop($this->playDeck));
+                }
+                $cardsToDraw++;
+            }
+
             $this->currentMessageToLog = 'All starting plots selected, game can begin';
         } else {
             $this->currentMessageToLog = 'Starting plot selected. Current turn is now: ' . $player['name'];

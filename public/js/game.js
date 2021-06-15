@@ -42,6 +42,9 @@ function checkMove() {
         case 5:
             requestPlotModal();
             break;
+        case 6:
+            
+            break;
         default:
             break;
     }
@@ -158,7 +161,7 @@ function updateOnline(users) {
 }
 
 function addToLog(message) {
-    document.getElementById('log').innerHTML += "<p>" + message + "</p>";
+    document.getElementById('log').innerHTML += "<p class='mb-0'>" + message + "</p>";
 }
 
 function updatePlayerStatusInDB(userId, isPlaying) {
