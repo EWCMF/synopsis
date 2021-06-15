@@ -28,7 +28,6 @@ function requestCurrentGameView() {
 function checkMove() {
     switch (turnSequence) {
         case 1:
-
             break;
         case 2:
 
@@ -43,7 +42,6 @@ function checkMove() {
             requestPlotModal();
             break;
         case 6:
-            
             break;
         default:
             break;
@@ -92,7 +90,7 @@ function requestPlotModal() {
                 return;
             }
 
-            if (document.getElementById('plot-modal-selectionPlots').childElementCount == 0) {
+            if (turnSequence == 6) {
                 $('#plot-modal').on('hidden.bs.modal', function (e) {
                     window.requestPlotModal = function() {
                         return false;
@@ -161,7 +159,11 @@ function updateOnline(users) {
 }
 
 function addToLog(message) {
-    document.getElementById('log').innerHTML += "<p class='mb-0'>" + message + "</p>";
+    const log = document.getElementById('log');
+    if (log.childElementCount == 5) {
+        log.removeChild(log.children[0]);
+    }
+    log.innerHTML += "<p class='mb-0'>" + message + "</p>";
 }
 
 function updatePlayerStatusInDB(userId, isPlaying) {
