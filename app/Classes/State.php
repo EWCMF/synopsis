@@ -225,7 +225,111 @@ class State implements JsonSerializable
     }
 
     public function addResources() {
+        $currentId = $this->currentTurn['id'];
 
+        foreach ($this->cardsOnHand[$currentId]['plots'] as $plot) {
+            switch ($plot['specialEffectId']) {
+                case 1:
+                    $foundIndexes = array();
+                    foreach ($this->resourceDeck as $key => $value) {
+                        if ($value['name'] == '1 Commerce') {
+                            array_push($foundIndexes, $key);
+                        }
+                        if (count($foundIndexes) == 2) {
+                            break;
+                        }
+                    }
+                    foreach ($foundIndexes as $foundIndex) {
+                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
+                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
+                    }
+                    break;
+
+                case 2:
+                    $foundIndexes = array();
+                    foreach ($this->resourceDeck as $key => $value) {
+                        if ($value['name'] == '1 Production') {
+                            array_push($foundIndexes, $key);
+                        }
+                        if (count($foundIndexes) == 2) {
+                            break;
+                        }
+                    }
+                    foreach ($foundIndexes as $foundIndex) {
+                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
+                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
+                    }
+                    break;
+
+                case 3:
+                    $foundIndexes = array();
+                    foreach ($this->resourceDeck as $key => $value) {
+                        if ($value['name'] == '1 Food') {
+                            array_push($foundIndexes, $key);
+                        }
+                        if (count($foundIndexes) == 2) {
+                            break;
+                        }
+                    }
+                    foreach ($foundIndexes as $foundIndex) {
+                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
+                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
+                    }
+                    break;
+
+                case 4:
+                    $foundIndexes = array();
+                    foreach ($this->resourceDeck as $key => $value) {
+                        if ($value['name'] == '1 Production' || $value['name'] == '1 Commerce') {
+                            array_push($foundIndexes, $key);
+                        }
+                        if (count($foundIndexes) == 2) {
+                            break;
+                        }
+                    }
+                    foreach ($foundIndexes as $foundIndex) {
+                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
+                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
+                    }
+                    break;
+
+                case 5:
+                    $foundIndexes = array();
+                    foreach ($this->resourceDeck as $key => $value) {
+                        if ($value['name'] == '1 Production' || $value['name'] == '1 Food') {
+                            array_push($foundIndexes, $key);
+                        }
+                        if (count($foundIndexes) == 2) {
+                            break;
+                        }
+                    }
+                    foreach ($foundIndexes as $foundIndex) {
+                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
+                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
+                    }
+                    break;
+
+                case 6:
+                    $foundIndexes = array();
+                    foreach ($this->resourceDeck as $key => $value) {
+                        if ($value['name'] == '1 Food' || $value['name'] == '1 Commerce') {
+                            array_push($foundIndexes, $key);
+                        }
+                        if (count($foundIndexes) == 2) {
+                            break;
+                        }
+                    }
+                    foreach ($foundIndexes as $foundIndex) {
+                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
+                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
+                    }
+                    break;
+
+                default:
+                    # code...
+                    break;
+            }
+        }
     }
 
     public function newState()

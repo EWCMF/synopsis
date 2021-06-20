@@ -4,9 +4,12 @@
             <div class="col-3">
                 <h5 class="mt-1">Resources</h5>
                 <div id="foeResources">
+                    <p>Commerce:</p>
+                    <p>Food:</p>
+                    <p>Production:</p>
                     @isset($foeHand)
                         @foreach ($foeHand['resources'] as $foeResource)
-                        <p class="m-0"><a class="text-light">{{ $foeResource['name'] }}</a></p>
+                        <p id="foeResource{{ $loop->index }}" class="m-0" onclick='showCard(this, JSON.parse(`@json($foeResource)`), false)' data-index="{{ $loop->index }}" data-deck="resourceDeck"><a class="text-light">{{ $foeResource['name'] }}</a></p>
                         @endforeach
                     @endisset
 
@@ -120,9 +123,12 @@
         <div class="row h-100 border light-grey">
             <div class="col-3">
                 <h5 class="mt-1">Resources</h5>
+                <p>Commerce:</p>
+                <p>Food:</p>
+                <p>Production:</p>
                 <div id="ownResources">
                     @foreach ($ownHand['resources'] as $ownResource)
-                    <p class="m-0"><a class="text-light">{{ $ownResource['name'] }}</a></p>
+                    <p id="resource{{ $loop->index }}" class="m-0" onclick='showCard(this, JSON.parse(`@json($ownResource)`), false)' data-index="{{ $loop->index }}" data-deck="resourceDeck"><a class="text-light">{{ $ownResource['name'] }}</a></p>
                     @endforeach
                 </div>
             </div>

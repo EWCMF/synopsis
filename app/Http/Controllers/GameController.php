@@ -372,7 +372,7 @@ class GameController extends Controller
 
         $state = new State($game->state);
 
-        if ($state->pickCards($cardIndexes, $deck, $userId)) {
+        if ($state->addResources()) {
 
             return "test";
         } else {
