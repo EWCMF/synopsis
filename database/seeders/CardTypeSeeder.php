@@ -25,11 +25,6 @@ class CardTypeSeeder extends Seeder
                 'updated_at' => $updatedAt
             ],
             [
-                'name' => 'Resource',
-                'created_at' => $createdAt,
-                'updated_at' => $updatedAt
-            ],
-            [
                 'name' => 'Population',
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt

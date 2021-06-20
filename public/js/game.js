@@ -149,8 +149,58 @@ function pickCard(cardIndex, deck) {
     }));
 };
 
+function skipTurnSequence() {
+    let xhr = new XMLHttpRequest();
+    let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    xhr.open('POST', '/skip-move');
+    xhr.setRequestHeader("X-CSRF-Token", csrf);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        'game_id': id,
+    }));
+}
+
 function changeCurrentTurn() {
     document.getElementById('currentTurn').innerHTML = currentTurn.name;
+}
+
+function changeTurnSequence() {
+    if (currentTurn['id'] != userId) {
+        document.getElementById('turnSequence').textContent = 'Opponent turn'
+        document.getElementById('options').innerHTML = ''
+        return;
+    }
+
+    switch (turnSequence) {
+        case 2:
+            document.getElementById('turnSequence').textContent = 'Purchasing of cards';
+            document.getElementById('options').innerHTML = '<button onclick="skipTurnSequence()">Skip</button>';
+            break;
+
+        case 3:
+            document.getElementById('turnSequence').textContent = 'Combat';
+            document.getElementById('options').innerHTML = '<button onclick="skipTurnSequence()">Skip</button>';
+            break;
+
+        case 4:
+            document.getElementById('turnSequence').textContent = 'Draw and Discard';
+            document.getElementById('options').innerHTML = '';
+            break;
+
+        case 5:
+            document.getElementById('turnSequence').textContent = 'Select starting plots';
+            document.getElementById('options').innerHTML = '';
+            break;
+
+        case 6:
+            document.getElementById('turnSequence').textContent = 'Discard 2 cards';
+            document.getElementById('options').innerHTML = '';
+            break;
+
+        default:
+            break;
+    }
 }
 
 function sleep(ms) {
@@ -217,11 +267,6 @@ function showCard(html, card, selectable) {
 
         case "wonder":
             newHtml = `<p>Name: ${card.name}</p><p>Type: ${card.type}</p><p>Cost: ${card.cost}</p><p>Special effect: ${card.specialEffect}</p>`;
-            document.getElementById('cardDescription').innerHTML = newHtml;
-            break;
-
-        case "resource":
-            newHtml = `<p>Name: ${card.name}</p><p>Type: ${card.type}</p>`;
             document.getElementById('cardDescription').innerHTML = newHtml;
             break;
 

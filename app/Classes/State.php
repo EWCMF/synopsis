@@ -15,7 +15,6 @@ class State implements JsonSerializable
     private $playDeck = array();
     private $techDeck = array();
     private $plotDeck = array();
-    private $resourceDeck = array();
     private $populationDeck = array();
     private $discardPile = array();
 
@@ -56,7 +55,11 @@ class State implements JsonSerializable
 
         $this->cardsOnHand[$player['id']]['plots'] = array();
         $this->cardsOnHand[$player['id']]['techs'] = array();
-        $this->cardsOnHand[$player['id']]['resources'] = array();
+        $this->cardsOnHand[$player['id']]['resources'] = array(
+            'food' => 0,
+            'commerce' => 0,
+            'production' => 0,
+        );
         $this->cardsOnHand[$player['id']]['hand'] = array();
     }
 
@@ -137,22 +140,70 @@ class State implements JsonSerializable
                         break;
 
                     case 4:
-                        break;
+                        foreach ($cardIndexes as $cardIndex) {
+                            array_push($this->discardPile, $this->cardsOnHand[$userId]['hand'][$cardIndex]);
+                            unset($this->cardsOnHand[$userId]['hand'][$cardIndex]);
+                        }
+                        $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
+                        $this->changePlayer();
+                        return true;
 
                     case 6:
                         foreach ($cardIndexes as $cardIndex) {
-                            $card = array_splice($this->cardsOnHand[$userId]['hand'], $cardIndex, 1);
-                            array_push($this->discardPile, $card[0]);
+                            array_push($this->discardPile, $this->cardsOnHand[$userId]['hand'][$cardIndex]);
+                            unset($this->cardsOnHand[$userId]['hand'][$cardIndex]);
                         }
+                        $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
                         $this->checkStartingDiscards();
                         return true;
-                        break;
                     default:
                         # code...
                         break;
                 }
             default:
                 return false;
+        }
+    }
+
+    public function changePlayer() {
+        $lastPlayer = end($this->players);
+        foreach ($this->players as $player) {
+            if ($player['id'] == $this->currentTurn['id']) {
+                if ($lastPlayer['id'] == $player['id']) {
+                    $this->currentTurn = $this->players[0];
+                    break;
+                } else {
+                    $index = array_search($player, $this->players) + 1;
+                    $this->currentTurn = $this->players[$index];
+                    break;
+                }
+            }
+        }
+    }
+
+    public function skipTurnSequence($userId) {
+        if ($userId != $this->currentTurn['id']) {
+            return false;
+        }
+
+        switch ($this->turnSequence) {
+            case 2:
+                $this->turnSequence = 3;
+                $this->currentMessageToLog = $this->currentTurn['name'] . " didn't purchase anything";
+                return true;
+            case 3:
+                $this->turnSequence = 4;
+                $this->currentTurn['name'] . " did not initiate combat";
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public function drawCards() {
+        $cardsToDraw = 4;
+        for ($i = 0; $i < $cardsToDraw; $i++) {
+            array_push($this->cardsOnHand[$this->currentTurn['id']]['hand'], array_pop($this->playDeck));
         }
     }
 
@@ -215,8 +266,8 @@ class State implements JsonSerializable
         $discardedCardsNeeded = count($this->players) * 2;
 
         if (count($this->discardPile) == $discardedCardsNeeded) {
-            $this->turnSequence = 1;
             $this->addResources();
+            $this->turnSequence = 2;
 
             $this->currentMessageToLog = 'Cards discarded. Game can begin';
         } else {
@@ -230,99 +281,51 @@ class State implements JsonSerializable
         foreach ($this->cardsOnHand[$currentId]['plots'] as $plot) {
             switch ($plot['specialEffectId']) {
                 case 1:
-                    $foundIndexes = array();
-                    foreach ($this->resourceDeck as $key => $value) {
-                        if ($value['name'] == '1 Commerce') {
-                            array_push($foundIndexes, $key);
-                        }
-                        if (count($foundIndexes) == 2) {
-                            break;
-                        }
-                    }
-                    foreach ($foundIndexes as $foundIndex) {
-                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
-                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
-                    }
+                    $currentCommerce = $this->cardsOnHand[$currentId]['resources']['commerce'];
+                    $newCommerce = $currentCommerce + 2;
+                    $this->cardsOnHand[$currentId]['resources']['commerce'] = $newCommerce;
                     break;
 
                 case 2:
-                    $foundIndexes = array();
-                    foreach ($this->resourceDeck as $key => $value) {
-                        if ($value['name'] == '1 Production') {
-                            array_push($foundIndexes, $key);
-                        }
-                        if (count($foundIndexes) == 2) {
-                            break;
-                        }
-                    }
-                    foreach ($foundIndexes as $foundIndex) {
-                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
-                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
-                    }
+                    $currentProduction = $this->cardsOnHand[$currentId]['resources']['production'];
+                    $newProduction = $currentProduction + 2;
+                    $this->cardsOnHand[$currentId]['resources']['production'] = $newProduction;
                     break;
 
                 case 3:
-                    $foundIndexes = array();
-                    foreach ($this->resourceDeck as $key => $value) {
-                        if ($value['name'] == '1 Food') {
-                            array_push($foundIndexes, $key);
-                        }
-                        if (count($foundIndexes) == 2) {
-                            break;
-                        }
-                    }
-                    foreach ($foundIndexes as $foundIndex) {
-                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
-                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
-                    }
+                    $currentFood = $this->cardsOnHand[$currentId]['resources']['food'];
+                    $newFood = $currentFood + 2;
+                    $this->cardsOnHand[$currentId]['resources']['food'] = $newFood;
                     break;
 
                 case 4:
-                    $foundIndexes = array();
-                    foreach ($this->resourceDeck as $key => $value) {
-                        if ($value['name'] == '1 Production' || $value['name'] == '1 Commerce') {
-                            array_push($foundIndexes, $key);
-                        }
-                        if (count($foundIndexes) == 2) {
-                            break;
-                        }
-                    }
-                    foreach ($foundIndexes as $foundIndex) {
-                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
-                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
-                    }
+                    $currentProduction = $this->cardsOnHand[$currentId]['resources']['production'];
+                    $newProduction = $currentProduction + 1;
+                    $this->cardsOnHand[$currentId]['resources']['production'] = $newProduction;
+
+                    $currentCommerce = $this->cardsOnHand[$currentId]['resources']['commerce'];
+                    $newCommerce = $currentCommerce + 1;
+                    $this->cardsOnHand[$currentId]['resources']['commerce'] = $newCommerce;
                     break;
 
                 case 5:
-                    $foundIndexes = array();
-                    foreach ($this->resourceDeck as $key => $value) {
-                        if ($value['name'] == '1 Production' || $value['name'] == '1 Food') {
-                            array_push($foundIndexes, $key);
-                        }
-                        if (count($foundIndexes) == 2) {
-                            break;
-                        }
-                    }
-                    foreach ($foundIndexes as $foundIndex) {
-                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
-                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
-                    }
+                    $currentFood = $this->cardsOnHand[$currentId]['resources']['food'];
+                    $newFood = $currentFood + 1;
+                    $this->cardsOnHand[$currentId]['resources']['food'] = $newFood;
+
+                    $currentProduction = $this->cardsOnHand[$currentId]['resources']['production'];
+                    $newProduction = $currentProduction + 1;
+                    $this->cardsOnHand[$currentId]['resources']['production'] = $newProduction;
                     break;
 
                 case 6:
-                    $foundIndexes = array();
-                    foreach ($this->resourceDeck as $key => $value) {
-                        if ($value['name'] == '1 Food' || $value['name'] == '1 Commerce') {
-                            array_push($foundIndexes, $key);
-                        }
-                        if (count($foundIndexes) == 2) {
-                            break;
-                        }
-                    }
-                    foreach ($foundIndexes as $foundIndex) {
-                        $card = array_splice($this->resourceDeck, $foundIndex, 1);
-                        array_push($this->cardsOnHand[$currentId]['resources'], $card[0]);
-                    }
+                    $currentFood = $this->cardsOnHand[$currentId]['resources']['food'];
+                    $newFood = $currentFood + 1;
+                    $this->cardsOnHand[$currentId]['resources']['food'] = $newFood;
+
+                    $currentCommerce = $this->cardsOnHand[$currentId]['resources']['commerce'];
+                    $newCommerce = $currentCommerce + 1;
+                    $this->cardsOnHand[$currentId]['resources']['commerce'] = $newCommerce;
                     break;
 
                 default:
@@ -335,7 +338,6 @@ class State implements JsonSerializable
     public function newState()
     {
         $plotId = DB::table('card_types')->where('name', 'Plot')->value('id');
-        $resourceId = DB::table('card_types')->where('name', 'Resource')->value('id');
         $populationId = DB::table('card_types')->where('name', 'Population')->value('id');
         $technologyId = DB::table('card_types')->where('name', 'Technology')->value('id');
         $unitId = DB::table('card_types')->where('name', 'Unit')->value('id');
@@ -370,22 +372,6 @@ class State implements JsonSerializable
                         $json->name,
                         $json->specialEffect,
                         $json->specialEffectId,
-                        $json->maxCardsInDeck
-                    )
-                );
-            }
-        }
-
-        $resourceCards = Card::where('card_type_id', $resourceId)->get();
-        foreach ($resourceCards as $resourceCard) {
-            $json = json_decode($resourceCard->properties);
-            for ($i = 0; $i < $json->maxCardsInDeck; $i++) {
-                array_push(
-                    $this->resourceDeck,
-                    new ResourceCard(
-                        $json->name,
-                        $json->resource,
-                        $json->count,
                         $json->maxCardsInDeck
                     )
                 );

@@ -212,6 +212,27 @@ class GameController extends Controller
         }
     }
 
+    public function skipMove(Request $request) {
+        $userId = Auth::id();
+        $gameId = $request->input('game_id');
+
+        $game = Game::find($gameId);
+
+        $state = new State($game->state);
+
+        if ($state->skipTurnSequence($userId)) {
+
+            $game->state = json_encode($state);
+            $game->save();
+
+            broadcast(new NewMove($gameId, $state));
+
+            return response()->noContent(200);
+        } else {
+            return 'Error: not your turn';
+        }
+    }
+
     public function requestCurrentView(Request $request)
     {
         $userId = Auth::id();
@@ -364,15 +385,15 @@ class GameController extends Controller
 
     public function debug() {
         $userId = Auth::id();
-        $gameId = 5;
-        $cardIndexes = [1, 2];
+        $gameId = 4;
+        $cardIndexes = [1, 3];
         $deck = 'playDeck';
 
         $game = Game::find($gameId);
 
         $state = new State($game->state);
 
-        if ($state->addResources()) {
+        if ($state->pickCards($cardIndexes, $deck, $userId)) {
 
             return "test";
         } else {

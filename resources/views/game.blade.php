@@ -13,10 +13,62 @@
                         <div id="selectedCards"></div>
                         <div id="useButtonContainer"></div>
                     </div>
-                    <div class="col-8">
+                    <div class="col-6">
                         <h5 class="mt-1">Card description</h5>
                         <div id="cardDescription">
 
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <h5 class="mt-1">Turn sequence</h5>
+                        <p id="turnSequence">
+                            @isset($turnSequence)
+                                @if ($userId != $currentTurn['id'])
+                                    <p>Opponent turn</p>
+                                @else
+                                    @switch($turnSequence)
+                                        @case(2)
+                                            <p>Purchasing of cards</p>
+                                        @break
+                                        @case(3)
+                                            <p>Combat</p>
+                                        @break
+                                        @case(4)
+                                            <p>Draw and Discard</p>
+                                        @break
+                                        @case(5)
+                                            <p>Select starting plots</p>
+                                        @break
+                                        @case(6)
+                                            <p>Discard 2 cards</p>
+                                        @break
+                                        @default
+                                    @endswitch
+                                @endif
+
+                            @endisset
+                        </p>
+                        <h5 class="mt-1">Options</h5>
+                        <div id="options">
+                            @isset($turnSequence)
+                                @if ($userId != $currentTurn['id'])
+
+                                @else
+                                    @switch($turnSequence)
+                                        @case('2')
+                                            <button onclick="skipTurnSequence()">Skip</button>
+                                        @break
+                                        @case('3')
+                                            <button onclick="skipTurnSequence()">Skip</button>
+                                        @break
+                                        @case('4')
+
+                                            @default
+                                        @endswitch
+                                    @endif
+
+
+                                @endisset
                         </div>
                     </div>
                 </div>
@@ -27,7 +79,7 @@
                         <h3>Players/Turn order</h3>
                         <div id="players">
                             @foreach ($players as $player)
-                                <p>{{$player['name']}}</p>
+                                <p>{{ $player['name'] }}</p>
                             @endforeach
                         </div>
                     </div>
@@ -43,9 +95,9 @@
                         <h3>Current turn:</h3>
                         <div id="currentTurn">
                             @if (isset($currentTurn))
-                            <p>{{$currentTurn['name']}}</p>
+                                <p>{{ $currentTurn['name'] }}</p>
                             @else
-                            Game not started
+                                Game not started
                             @endif
                         </div>
                     </div>
@@ -82,9 +134,9 @@
         let userId = +"{{ $userId }}";
         let ownerId = +"{{ $ownerId }}";
         @if ($currentTurn)
-        let currentTurn = @json($currentTurn);
+            let currentTurn = @json($currentTurn);
         @else
-        let currentTurn = null;
+            let currentTurn = null;
         @endif
         let turnSequence = +"{{ $turnSequence }}";
         let usersCount;
@@ -143,8 +195,9 @@
                 requestCurrentGameView();
                 checkMove();
                 currentTurn = data.currentTurn;
-                turnSequence = data.turnSequence;
+                turnSequence = +data.turnSequence;
                 changeCurrentTurn();
+                changeTurnSequence();
             });
 
     </script>

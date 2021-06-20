@@ -24,7 +24,6 @@ class CardSeeder extends Seeder
     public function run()
     {
         $plotId = DB::table('card_types')->where('name', 'Plot')->value('id');
-        $resourceId = DB::table('card_types')->where('name', 'Resource')->value('id');
         $populationId = DB::table('card_types')->where('name', 'Population')->value('id');
         $technologyId = DB::table('card_types')->where('name', 'Technology')->value('id');
         $unitId = DB::table('card_types')->where('name', 'Unit')->value('id');
@@ -36,44 +35,6 @@ class CardSeeder extends Seeder
         $updatedAt = Carbon::now();
 
         DB::table('cards')->insert([
-            //Resource cards
-            [
-                'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('1 Commerce', 'Commerce', 1, 8)),
-                'created_at' => $createdAt,
-                'updated_at' => $updatedAt
-            ],
-            [
-                'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('5 Commerce', 'Commerce', 5, 20)),
-                'created_at' => $createdAt,
-                'updated_at' => $updatedAt
-            ],
-            [
-                'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('1 Production', 'Production', 1, 8)),
-                'created_at' => $createdAt,
-                'updated_at' => $updatedAt
-            ],
-            [
-                'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('5 Production', 'Production', 5, 20)),
-                'created_at' => $createdAt,
-                'updated_at' => $updatedAt
-            ],
-            [
-                'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('1 Food', 'Food', 1, 8)),
-                'created_at' => $createdAt,
-                'updated_at' => $updatedAt
-            ],
-            [
-                'card_type_id' => $resourceId,
-                'properties' => json_encode(new ResourceCard('5 Food', 'Commerce', 5, 20)),
-                'created_at' => $createdAt,
-                'updated_at' => $updatedAt
-            ],
-
             //Bonus resource cards
             [
                 'card_type_id' => $bonusId,

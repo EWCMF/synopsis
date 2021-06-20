@@ -4,15 +4,11 @@
             <div class="col-3">
                 <h5 class="mt-1">Resources</h5>
                 <div id="foeResources">
-                    <p>Commerce:</p>
-                    <p>Food:</p>
-                    <p>Production:</p>
                     @isset($foeHand)
-                        @foreach ($foeHand['resources'] as $foeResource)
-                        <p id="foeResource{{ $loop->index }}" class="m-0" onclick='showCard(this, JSON.parse(`@json($foeResource)`), false)' data-index="{{ $loop->index }}" data-deck="resourceDeck"><a class="text-light">{{ $foeResource['name'] }}</a></p>
-                        @endforeach
+                        <p>Commerce: {{$foeHand['resources']['commerce']}}</p>
+                        <p>Food: {{$foeHand['resources']['food']}}</p>
+                        <p>Production: {{$foeHand['resources']['production']}}</p>
                     @endisset
-
                 </div>
             </div>
             <div class="col-3">
@@ -123,14 +119,14 @@
         <div class="row h-100 border light-grey">
             <div class="col-3">
                 <h5 class="mt-1">Resources</h5>
-                <p>Commerce:</p>
-                <p>Food:</p>
-                <p>Production:</p>
                 <div id="ownResources">
-                    @foreach ($ownHand['resources'] as $ownResource)
-                    <p id="resource{{ $loop->index }}" class="m-0" onclick='showCard(this, JSON.parse(`@json($ownResource)`), false)' data-index="{{ $loop->index }}" data-deck="resourceDeck"><a class="text-light">{{ $ownResource['name'] }}</a></p>
-                    @endforeach
+                    @isset($ownHand)
+                        <p>Commerce: {{$ownHand['resources']['commerce']}}</p>
+                        <p>Food: {{$ownHand['resources']['food']}}</p>
+                        <p>Production: {{$ownHand['resources']['production']}}</p>
+                    @endisset
                 </div>
+
             </div>
             <div class="col-3">
                 <h5 class="mt-1">Tech</h5>
