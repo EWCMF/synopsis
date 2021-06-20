@@ -119,6 +119,23 @@ function pickCard(cardIndex, deck) {
         return;
     }
 
+    switch (turnSequence) {
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        case 6:
+            break;
+        default:
+            break;
+    }
+
     let xhr = new XMLHttpRequest();
     let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -160,7 +177,7 @@ function updateOnline(users) {
 
 function addToLog(message) {
     const log = document.getElementById('log');
-    if (log.childElementCount == 5) {
+    if (log.childElementCount == 8) {
         log.removeChild(log.children[0]);
     }
     log.innerHTML += "<p class='mb-0'>" + message + "</p>";
@@ -178,4 +195,8 @@ function updatePlayerStatusInDB(userId, isPlaying) {
         'game_id': id,
         'isPlaying': isPlaying
     }));
+}
+
+function showCard(card) {
+    console.log(card);
 }

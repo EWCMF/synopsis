@@ -3,8 +3,21 @@
 @section('content')
     <div class="container-fluid cobalt">
         <div class="row">
-            <div class="col-10 border-right" id="gameArea">
-                @include('partials.game-area')
+            <div class="col-10 border-right">
+                <div id="gameArea">
+                    @include('partials.game-area')
+                </div>
+                <div class="row light-grey mt-3">
+                    <div class="col-4">
+                        <h5 class="mt-1">Selected card(s)</h5>
+                    </div>
+                    <div class="col-8">
+                        <h5 class="mt-1">Card description</h5>
+                        <div id="cardDescription">
+                            
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-2 eggplant">
                 <div class="d-flex flex-column vh-100">

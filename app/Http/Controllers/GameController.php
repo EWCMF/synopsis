@@ -151,6 +151,18 @@ class GameController extends Controller
 
         return response()->noContent(200);
     }
+    public function selectCard(Request $request) {
+        $userId = Auth::id();
+        $gameId = $request->input('game_id');
+        $cardIndex = $request->input('index');
+        $deck = $request->input('deck');
+
+        $game = Game::find($gameId);
+        $state = new State($game->state);
+
+        
+    }
+
 
     public function makeMove(Request $request)
     {
