@@ -146,7 +146,7 @@
                 <h5 class="mt-1">Play cards</h5>
                 <div id="ownPlayCards">
                     @foreach ($ownHand['hand'] as $ownPlayCard)
-                    <p class="m-0" onclick='showCard(JSON.parse(`@json($ownPlayCard)`))'><a class="text-light">{{ $ownPlayCard['name'] }}</a></p>
+                    <p id="ownCard{{ $loop->index }}" class="m-0" onclick='showCard(this, JSON.parse(`@json($ownPlayCard)`), true)' data-index="{{ $loop->index }}" data-deck="playDeck"><a class="text-light">{{ $ownPlayCard['name'] }}</a></p>
                     @endforeach
                 </div>
             </div>

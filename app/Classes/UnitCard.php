@@ -6,6 +6,7 @@ use JsonSerializable;
 
 class UnitCard implements JsonSerializable {
     private string $name;
+    private string $type = 'unit';
     private string $specialEffect;
     private int $specialEffectId;
     private int $maxCardsInDeck;
@@ -19,6 +20,10 @@ class UnitCard implements JsonSerializable {
 
     public function getName() {
         return $this->name;
+    }
+
+    public function getType() {
+        return $this->type;
     }
 
     public function getSpecialEffect() {

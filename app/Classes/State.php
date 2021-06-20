@@ -110,6 +110,52 @@ class State implements JsonSerializable
         }
     }
 
+    public function pickCards($cardIndexes, $deck, $userId) {
+        if ($userId != $this->currentTurn['id']) {
+            return false;
+        }
+
+        switch ($deck) {
+            case 'purchaseablePlots':
+                // $card = array_splice($this->purchaseablePlots, $cardIndex, 1);
+                // array_push($this->cardsOnHand[$userId]['plots'], $card[0]);
+                // if ($this->turnSequence == 5) {
+                //     $this->checkStartingPlots();
+                // } else {
+                //     $this->currentMessageToLog = '';
+                // }
+                // return true;
+            case 'playDeck':
+                switch ($this->turnSequence) {
+                    case 1:
+                        # code...
+                        break;
+                    case 2:
+                        break;
+
+                    case 3:
+                        break;
+
+                    case 4:
+                        break;
+
+                    case 6:
+                        foreach ($cardIndexes as $cardIndex) {
+                            $card = array_splice($this->cardsOnHand[$userId]['hand'], $cardIndex, 1);
+                            array_push($this->discardPile, $card[0]);
+                        }
+                        $this->checkStartingDiscards();
+                        return true;
+                        break;
+                    default:
+                        # code...
+                        break;
+                }
+            default:
+                return false;
+        }
+    }
+
     public function checkStartingPlots() {
         $lastPlayer = end($this->players);
         foreach ($this->players as $player) {
@@ -143,10 +189,39 @@ class State implements JsonSerializable
                 $cardsToDraw++;
             }
 
-            $this->currentMessageToLog = 'All starting plots selected, game can begin';
+            $this->currentMessageToLog = 'All starting plots selected. 2 Cards must now be discarded by each player';
         } else {
             $this->currentMessageToLog = 'Starting plot selected. Current turn is now: ' . $player['name'];
         }
+    }
+
+    public function checkStartingDiscards() {
+        $lastPlayer = end($this->players);
+        foreach ($this->players as $player) {
+            if ($player['id'] == $this->currentTurn['id']) {
+                if ($lastPlayer == $player) {
+                    $this->currentTurn = $this->players[0];
+                } else {
+                    $index = array_search($player, $this->players) + 1;
+                    $this->currentTurn = $this->players[$index];
+                }
+            }
+        }
+
+        $discardedCardsNeeded = count($this->players) * 2;
+
+        if (count($this->discardPile) == $discardedCardsNeeded) {
+            $this->turnSequence = 1;
+            $this->addResources();
+
+            $this->currentMessageToLog = 'Cards discarded. Game can begin';
+        } else {
+            $this->currentMessageToLog = '2 cards have been discarded. Current turn is now: ' . $player['name'];
+        }
+    }
+
+    public function addResources() {
+
     }
 
     public function newState()
@@ -283,9 +358,8 @@ class State implements JsonSerializable
                     $this->playDeck,
                     new BonusResourceCard(
                         $json->name,
-                        $json->resource,
-                        $json->count,
-                        $json->isWild,
+                        $json->specialEffect,
+                        $json->specialEffectId,
                         $json->maxCardsInDeck
                     )
                 );

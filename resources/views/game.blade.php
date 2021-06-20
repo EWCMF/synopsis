@@ -10,11 +10,13 @@
                 <div class="row light-grey mt-3">
                     <div class="col-4">
                         <h5 class="mt-1">Selected card(s)</h5>
+                        <div id="selectedCards"></div>
+                        <div id="useButtonContainer"></div>
                     </div>
                     <div class="col-8">
                         <h5 class="mt-1">Card description</h5>
                         <div id="cardDescription">
-                            
+
                         </div>
                     </div>
                 </div>
@@ -87,6 +89,7 @@
         let turnSequence = +"{{ $turnSequence }}";
         let usersCount;
         let gameStarting = false;
+        let selectedCards = [];
 
 
         Echo.join(`game.${id}`)
@@ -98,7 +101,12 @@
                 for (const user of users) {
                     updatePlayerStatusInDB(user.id, true);
                 }
-                checkCanStart(usersCount);
+                if (!started) {
+                    checkCanStart(usersCount);
+                } else {
+                    requestCurrentGameView();
+                }
+
             })
             .joining((user) => {
                 this.users.push(user);

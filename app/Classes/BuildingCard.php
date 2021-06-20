@@ -6,6 +6,7 @@ use JsonSerializable;
 
 class BuildingCard implements JsonSerializable {
     private string $name;
+    private string $type = 'building';
     private int $cost;
     private string $specialEffect;
     private int $specialEffectId;
@@ -21,6 +22,10 @@ class BuildingCard implements JsonSerializable {
 
     public function getName() {
         return $this->name;
+    }
+
+    public function getType() {
+        return $this->type;
     }
 
     public function getCost() {

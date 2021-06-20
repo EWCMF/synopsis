@@ -160,7 +160,7 @@ class GameController extends Controller
         $game = Game::find($gameId);
         $state = new State($game->state);
 
-        
+
     }
 
 
@@ -176,6 +176,30 @@ class GameController extends Controller
         $state = new State($game->state);
 
         if ($state->pickCard($cardIndex, $deck, $userId)) {
+
+            $game->state = json_encode($state);
+            $game->save();
+
+            broadcast(new NewMove($gameId, $state));
+
+            return response()->noContent(200);
+        } else {
+            return 'Error: not your turn';
+        }
+    }
+
+    public function makeMoves(Request $request)
+    {
+        $userId = Auth::id();
+        $gameId = $request->input('game_id');
+        $cardIndexes = json_decode($request->input('cardIndexes'));
+        $deck = $request->input('deck');
+
+        $game = Game::find($gameId);
+
+        $state = new State($game->state);
+
+        if ($state->pickCards($cardIndexes, $deck, $userId)) {
 
             $game->state = json_encode($state);
             $game->save();

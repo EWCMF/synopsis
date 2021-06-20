@@ -6,6 +6,7 @@ use JsonSerializable;
 
 class ResourceCard implements JsonSerializable {
     private string $name;
+    private string $type = 'resource';
     private string $resource;
     private int $count;
     private int $maxCardsInDeck;
@@ -19,6 +20,10 @@ class ResourceCard implements JsonSerializable {
 
     public function getName() {
         return $this->name;
+    }
+
+    public function getType() {
+        return $this->type;
     }
 
     public function getResource() {

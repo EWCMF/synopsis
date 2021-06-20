@@ -77,49 +77,49 @@ class CardSeeder extends Seeder
             //Bonus resource cards
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('2 Bonus Commerce', 'Commerce', 2, false, 5)),
+                'properties' => json_encode(new BonusResourceCard('2 Bonus Commerce', 'Grants 2 Commerce when used', 1, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('3 Bonus Commerce', 'Commerce', 3, false, 2)),
+                'properties' => json_encode(new BonusResourceCard('3 Bonus Commerce', 'Grants 3 Commerce when used', 2, 2)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('2 Bonus Production', 'Production', 2, false, 5)),
+                'properties' => json_encode(new BonusResourceCard('2 Bonus Production', 'Grants 2 Production when used', 3, 5)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('3 Bonus Production', 'Production', 3, false, 3)),
+                'properties' => json_encode(new BonusResourceCard('3 Bonus Production', 'Grants 3 Production when used', 4, 3)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('2 Bonus Food', 'Food', 2, false, 4)),
+                'properties' => json_encode(new BonusResourceCard('2 Bonus Food', 'Grants 2 Food when used', 5, 4)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('3 Bonus Food', 'Food', 3, false, 4)),
+                'properties' => json_encode(new BonusResourceCard('3 Bonus Food', 'Grants 3 Food when used', 6, 4)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('1 Bonus Wild', 'Wild', 1, true, 4)),
+                'properties' => json_encode(new BonusResourceCard('1 Bonus Wild', 'Grants any 1 resources when used', 7, 4)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
                 'card_type_id' => $bonusId,
-                'properties' => json_encode(new BonusResourceCard('2 Bonus Wild', 'Wild', 2, true, 3)),
+                'properties' => json_encode(new BonusResourceCard('2 Bonus Wild', 'Grants any of 2 resources when used', 8, 3)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],

@@ -6,6 +6,7 @@ use JsonSerializable;
 
 class WonderCard implements JsonSerializable {
     private string $name;
+    private string $type = 'technology';
     private int $cost;
     private string $specialEffect;
     private int $specialEffectId;
@@ -21,6 +22,10 @@ class WonderCard implements JsonSerializable {
 
     public function getName() {
         return $this->name;
+    }
+
+    public function getType() {
+        return $this->type;
     }
 
     public function getCost() {

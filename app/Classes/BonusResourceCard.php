@@ -6,16 +6,15 @@ use JsonSerializable;
 
 class BonusResourceCard implements JsonSerializable {
     private string $name;
-    private string $resource;
-    private int $count;
-    private bool $isWild;
+    private string $type = 'bonusResource';
+    private string $specialEffect;
+    private int $specialEffectId;
     private int $maxCardsInDeck;
 
-    public function __construct($name, $resource, $count, $isWild, $maxCardsInDeck) {
+    public function __construct($name, $specialEffect, $specialEffectId, $maxCardsInDeck) {
         $this->name = $name;
-        $this->resource = $resource;
-        $this->count = $count;
-        $this->isWild = $isWild;
+        $this->specialEffect = $specialEffect;
+        $this->specialEffectId = $specialEffectId;
         $this->maxCardsInDeck = $maxCardsInDeck;
     }
 
@@ -23,16 +22,16 @@ class BonusResourceCard implements JsonSerializable {
         return $this->name;
     }
 
-    public function getResource() {
-        return $this->resource;
+    public function getType() {
+        return $this->type;
     }
 
-    public function getCount() {
-        return $this->count;
+    public function getSpecialEffect() {
+        return $this->specialEffect;
     }
 
-    public function isWild() {
-        return $this->isWild;
+    public function getSpecialEffectId() {
+        return $this->specialEffectId;
     }
 
     public function getMaxCardsInDeck() {
