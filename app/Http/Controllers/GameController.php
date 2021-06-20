@@ -361,4 +361,22 @@ class GameController extends Controller
             ]
         );
     }
+
+    public function debug() {
+        $userId = Auth::id();
+        $gameId = 5;
+        $cardIndexes = [1, 2];
+        $deck = 'playDeck';
+
+        $game = Game::find($gameId);
+
+        $state = new State($game->state);
+
+        if ($state->pickCards($cardIndexes, $deck, $userId)) {
+
+            return "test";
+        } else {
+            return 'Error: not your turn';
+        }
+    }
 }

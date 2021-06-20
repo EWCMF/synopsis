@@ -97,7 +97,6 @@
                 this.users = users;
                 usersCount = users.length;
                 updateOnline(this.users);
-                updatePlayers(users);
                 for (const user of users) {
                     updatePlayerStatusInDB(user.id, true);
                 }

@@ -73,7 +73,7 @@ class State implements JsonSerializable
         shuffle($this->plotDeck);
 
         shuffle($this->players);
-        $this->currentTurn = $this->players[1];
+        $this->currentTurn = $this->players[0];
         $this->turnSequence = 5;
 
         foreach ($this->players as $player) {
@@ -160,11 +160,13 @@ class State implements JsonSerializable
         $lastPlayer = end($this->players);
         foreach ($this->players as $player) {
             if ($player['id'] == $this->currentTurn['id']) {
-                if ($lastPlayer == $player) {
+                if ($lastPlayer['id'] == $player['id']) {
                     $this->currentTurn = $this->players[0];
+                    break;
                 } else {
                     $index = array_search($player, $this->players) + 1;
                     $this->currentTurn = $this->players[$index];
+                    break;
                 }
             }
         }
@@ -199,11 +201,13 @@ class State implements JsonSerializable
         $lastPlayer = end($this->players);
         foreach ($this->players as $player) {
             if ($player['id'] == $this->currentTurn['id']) {
-                if ($lastPlayer == $player) {
+                if ($lastPlayer['id'] == $player['id']) {
                     $this->currentTurn = $this->players[0];
+                    break;
                 } else {
                     $index = array_search($player, $this->players) + 1;
                     $this->currentTurn = $this->players[$index];
+                    break;
                 }
             }
         }

@@ -312,4 +312,5 @@ function useSelectedCards() {
     }));
 
     document.getElementById('selectedCards').innerHTML = '';
+    document.getElementById('useButtonContainer').innerHTML = '';
 }
