@@ -18,6 +18,7 @@ class State implements JsonSerializable
     private $populationDeck = array();
     private $discardPile = array();
 
+    private $playerNotes = array();
     private $cardsOnHand = array();
     private $currentTurn;
     private int $turnSequence;
@@ -64,6 +65,8 @@ class State implements JsonSerializable
             'victoryPoints' => 0,
         );
         $this->cardsOnHand[$player['id']]['hand'] = array();
+        $this->cardsOnHand[$player['id']]['freePopUsed'] = false;
+        $this->playerNotes[$player['id']] = array();
     }
 
     public function startGame()
@@ -111,9 +114,18 @@ class State implements JsonSerializable
                 }
 
                 return true;
-            default:
-                return false;
+
+            case 'ownPlots':
+                if ($this->turnSequence == 2) {
+                    if ($this->checkCanPurchasePopulation($userId, $cardIndex)) {
+                        $this->cardsOnHand[$userId]['plots'][$cardIndex]['attachedPopulation']++;
+                        $this->currentMessageToLog = $this->currentTurn['name'] . ' purchased population for ' . $this->cardsOnHand[$userId]['plots'][$cardIndex]['name'];
+                        return true;
+                    }
+                }
         }
+
+        return false;
     }
 
     public function pickCards($cardIndexes, $deck, $userId) {
@@ -149,6 +161,12 @@ class State implements JsonSerializable
                         }
                         $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
                         $this->changePlayer();
+                        if ($this->checkPopulationCount($this->currentTurn['id']) == 0) {
+                            $this->turnSequence = 2;
+                        } else {
+                            $this->turnSequence = 1;
+                        }
+                        $this->addResources();
                         return true;
 
                     case 6:
@@ -182,6 +200,7 @@ class State implements JsonSerializable
                 }
             }
         }
+        $this->updateNotes($this->currentTurn['id']);
     }
 
     public function skipTurnSequence($userId) {
@@ -192,11 +211,11 @@ class State implements JsonSerializable
         switch ($this->turnSequence) {
             case 2:
                 $this->turnSequence = 3;
-                $this->currentMessageToLog = $this->currentTurn['name'] . " didn't purchase anything";
+                $this->currentMessageToLog = $this->currentTurn['name'] . " finished the purchasing phase.";
                 return true;
             case 3:
                 $this->turnSequence = 4;
-                $this->currentTurn['name'] . " did not initiate combat";
+                $this->currentMessageToLog = $this->currentTurn['name'] . " did not initiate combat.";
                 return true;
             default:
                 return false;
@@ -286,6 +305,7 @@ class State implements JsonSerializable
         if (count($this->discardPile) == $discardedCardsNeeded) {
             $this->addResources();
             $this->turnSequence = 2;
+            $this->updateNotes($this->currentTurn['id']);
 
             $this->currentMessageToLog = 'Cards discarded. Game can begin';
         } else {
@@ -351,6 +371,36 @@ class State implements JsonSerializable
                     break;
             }
         }
+    }
+
+    public function updateNotes($playerId) {
+        $this->playerNotes[$playerId] = array();
+        if (!$this->cardsOnHand[$playerId]['freePopUsed']) {
+            array_push($this->playerNotes[$playerId], "One free population available for any plot.");
+        }
+    }
+
+    public function checkPopulationCount($playerId) {
+        $populationCount = 0;
+        foreach ($this->cardsOnHand[$playerId]['plots'] as $plot) {
+            $populationCount += $plot['attachedPopulation'];
+        }
+        return $populationCount;
+    }
+
+    public function checkCanPurchasePopulation($playerId, $cardIndex) {
+        if (!$this->cardsOnHand[$playerId]['freePopUsed']) {
+            $this->cardsOnHand[$playerId]['freePopUsed'] = true;
+            $this->updateNotes($playerId);
+            return true;
+        }
+
+        $food = $this->cardsOnHand[$playerId]['resources']['food'];
+
+        $base = 6;
+        $price = $this->cardsOnHand[$playerId]['plots'][$cardIndex]['attachedPopulation'] * 2 + $base;
+
+        return $food >= $price;
     }
 
     public function newState()
@@ -551,5 +601,9 @@ class State implements JsonSerializable
 
     public function getCurrentMessageToLog() {
         return $this->currentMessageToLog;
+    }
+
+    public function getPlayerNotes() {
+        return $this->playerNotes;
     }
 }

@@ -1,4 +1,4 @@
-<div class="d-flex flex-column vh-100">
+<div class="d-flex flex-column">
     <div class="h-100 mb-5">
         <div class="row h-100 border light-grey">
             <div class="col-3">
@@ -19,24 +19,36 @@
                 <div id="foeTech">
                     @isset($foeHand)
                         @foreach ($foeHand['techs'] as $foeTech)
-                        <p class="m-0"><a class="text-light">{{ $foeTech['name'] }}</a></p>
+                        <p class="m-0" onclick='showCard(this, JSON.parse(`@json($foeTech)`), false)'><a class="text-light">{{ $foeTech['name'] }}</a></p>
                         @endforeach
                     @endisset
 
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-4">
                 <h5 class="mt-1">Plots</h5>
                 <div id="foePlots">
                     @isset($foeHand)
+                    <div class="row">
                         @foreach ($foeHand['plots'] as $foePlot)
-                        <p class="m-0"><a class="text-light">{{ $foePlot['name'] }}</a></p>
+                        <div class="col-6">
+                        <p class="m-0" onclick='showCard(this, JSON.parse(`@json($foePlot)`), false)'><a class="text-light">{{ $foePlot['name'] }}</a></p>
+                        <p class="mb-0 ml-3">Population: {{$foePlot['attachedPopulation']}}</p>
+                        @if (empty($foePlot['attachedBuildings']))
+                        <p class="ml-3">No buildings</p>
+                        @else
+                            @foreach ($foePlot['attachedBuildings'] as $building)
+                            <p class="mb-0 ml-3" onclick='showCard(this, JSON.parse(`@json($building)`), false)'><a class="text-light">{{ $foePlot['name'] }}</a></p>
+                            @endforeach
+                        @endif
+                        </div>
                         @endforeach
+                    </div>
                     @endisset
 
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <h5 class="mt-1">Play cards</h5>
                 <div id="foePlayCards">
                     @isset($foeHand)
@@ -70,13 +82,13 @@
             </div>
             <div class="col-4">
                 <div class="row w-100 h-100 border light-grey">
-                    <div class="col-6 h-100 border-right">
+                    <div class="col-6 h-100 border-right pb-3">
                         <h5 class="mt-1">
                             Purchaseable plots
                         </h5>
                         <div id="purchaseablePlots">
                             @foreach ($purchaseablePlots as $purchaseablePlot)
-                            <p class="m-0"><a class="text-light">{{ $purchaseablePlot['name'] }}</a></p>
+                            <p class="m-0" onclick='showCard(this, JSON.parse(`@json($purchaseablePlot)`), false)' data-index="{{ $loop->index }}" data-deck="purchaseablePlots"><a class="text-light">{{ $purchaseablePlot['name'] }}</a></p>
                             @endforeach
                         </div>
                     </div>
@@ -86,7 +98,7 @@
                         </h5>
                         <div id="purchaseableTech">
                             @foreach ($purchaseableTechs as $purchaseableTech)
-                            <p class="m-0"><a class="text-light">{{ $purchaseableTech['name'] }}</a></p>
+                            <p class="m-0" onclick='showCard(this, JSON.parse(`@json($purchaseableTech)`), false)' data-index="{{ $loop->index }}" data-deck="purchaseableTechs"><a class="text-light">{{ $purchaseableTech['name'] }}</a></p>
                             @endforeach
                         </div>
                     </div>
@@ -138,19 +150,31 @@
                 <h5 class="mt-1">Tech</h5>
                 <div id="ownTech">
                     @foreach ($ownHand['techs'] as $ownTech)
-                    <p class="m-0"><a class="text-light">{{ $ownTech['name'] }}</a></p>
+                    <p class="m-0" onclick='showCard(this, JSON.parse(`@json($ownTech)`), false)' data-index="{{ $loop->index }}" data-deck="ownTech"><a class="text-light">{{ $ownTech['name'] }}</a></p>
                     @endforeach
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-4">
                 <h5 class="mt-1">Plots</h5>
                 <div id="ownPlots">
+                    <div class="row">
                     @foreach ($ownHand['plots'] as $ownPlot)
-                    <p class="m-0"><a class="text-light">{{ $ownPlot['name'] }}</a></p>
+                    <div class="col-6">
+                    <p class="m-0" onclick='showCard(this, JSON.parse(`@json($ownPlot)`), false)' data-index="{{ $loop->index }}" data-deck="ownPlots"><a class="text-light">{{ $ownPlot['name'] }}</a></p>
+                    <p class="mb-0 ml-3">Population: {{$ownPlot['attachedPopulation']}}</p>
+                    @if (empty($ownPlot['attachedBuildings']))
+                        <p class="ml-3">No buildings</p>
+                    @else
+                        @foreach ($ownPlot['attachedBuildings'] as $building)
+                        <p class="mb-0 ml-3" onclick='showCard(this, JSON.parse(`@json($building)`), false)' data-index="{{ $loop->index }}" data-deck="attachedBuildings"><a class="text-light">{{ $foePlot['name'] }}</a></p>
+                        @endforeach
+                    @endif
+                    </div>
                     @endforeach
+                    </div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <h5 class="mt-1">Play cards</h5>
                 <div id="ownPlayCards">
                     @foreach ($ownHand['hand'] as $ownPlayCard)

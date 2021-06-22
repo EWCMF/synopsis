@@ -119,23 +119,6 @@ function pickCard(cardIndex, deck) {
         return;
     }
 
-    switch (turnSequence) {
-        case 1:
-            break;
-        case 2:
-            break;
-        case 3:
-            break;
-        case 4:
-            break;
-        case 5:
-            break;
-        case 6:
-            break;
-        default:
-            break;
-    }
-
     let xhr = new XMLHttpRequest();
     let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -166,6 +149,7 @@ function changeCurrentTurn() {
 }
 
 function changeTurnSequence() {
+    document.getElementById('turnSequence').textContent = '';
     if (currentTurn['id'] != userId) {
         document.getElementById('turnSequence').textContent = 'Opponent turn'
         document.getElementById('options').innerHTML = ''
@@ -175,12 +159,12 @@ function changeTurnSequence() {
     switch (turnSequence) {
         case 2:
             document.getElementById('turnSequence').textContent = 'Purchasing of cards';
-            document.getElementById('options').innerHTML = '<button onclick="skipTurnSequence()">Skip</button>';
+            document.getElementById('options').innerHTML = '<button class="btn btn-primary" onclick="skipTurnSequence()">Skip turn sequence</button>';
             break;
 
         case 3:
             document.getElementById('turnSequence').textContent = 'Combat';
-            document.getElementById('options').innerHTML = '<button onclick="skipTurnSequence()">Skip</button>';
+            document.getElementById('options').innerHTML = '<button class="btn btn-primary" onclick="skipTurnSequence()">Skip turn sequence</button>';
             break;
 
         case 4:
@@ -299,7 +283,33 @@ function showCard(html, card, selectable) {
         } else {
             document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="addToSelected('${html.id}')">Add to selected</button>`
         }
+        return;
     }
+
+    switch (turnSequence) {
+        case 2:
+            if (card.type == 'plot') {
+                if (html.dataset.deck == 'purchaseablePlots') {
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', '${html.dataset.deck}')">Purchase plot</button>`
+                } else if (html.dataset.deck == 'ownPlots') {
+                    let price = checkPopulationPrice(html.dataset.index);
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', '${html.dataset.deck}')">Purchase population for ${price}</button>`
+                }
+            }
+            break;
+
+        default:
+            break;
+    }
+}
+
+function checkPopulationPrice(cardIndex) {
+    if (!ownHand.freePopUsed) {
+        return 'free';
+    }
+
+    let base = 6;
+    return ownHand['plots'][cardIndex]['attachedPopulation'] * 2 + base;
 }
 
 function addToSelected(htmlId) {
@@ -358,4 +368,13 @@ function useSelectedCards() {
 
     document.getElementById('selectedCards').innerHTML = '';
     document.getElementById('useButtonContainer').innerHTML = '';
+}
+
+function updateNotes() {
+    document.getElementById('playerNotes').innerHtml = '';
+    let html = '';
+    for (const note of notes) {
+        html += `<p>${note}</p>`;
+    }
+    document.getElementById('playerNotes').innerHtml = html;
 }

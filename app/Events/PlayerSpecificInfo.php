@@ -2,17 +2,18 @@
 
 namespace App\Events;
 
+use App\Classes\State;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NewMove implements ShouldBroadcast
+class PlayerSpecificInfo implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $state;
+    public State $state;
     protected $id;
 
     /**
@@ -33,15 +34,14 @@ class NewMove implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PresenceChannel('game.'.$this->id);
+        return new PrivateChannel('user.'.$this->id);
     }
 
     public function broadcastWith()
     {
         return [
-            'log' => $this->state->getCurrentMessageToLog(),
-            'currentTurn' => $this->state->getCurrentTurn(),
-            'turnSequence' => $this->state->getTurnSequence(),
+            'notes' => $this->state->getPlayerNotes()[$this->id],
+            'ownHand' => $this->state->getCarsInHandForUser($this->id),
         ];
     }
 }

@@ -7,48 +7,58 @@
                 <div id="gameArea">
                     @include('partials.game-area')
                 </div>
-                <div class="row light-grey mt-3">
-                    <div class="col-4">
+                <div class="row light-grey mt-3 pb-3">
+                    <div class="col-2">
                         <h5 class="mt-1">Selected card(s)</h5>
                         <div id="selectedCards"></div>
                         <div id="useButtonContainer"></div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-5">
                         <h5 class="mt-1">Card description</h5>
                         <div id="cardDescription">
 
                         </div>
                     </div>
+                    <div class="col-3">
+                        <h5 class="mt-1">Notes</h5>
+                        <div id="playerNotes">
+                            @isset($notes)
+                            @foreach ($notes as $note)
+                            <p>{{$note}}</p>
+                            @endforeach
+                            @endisset
+                        </div>
+                    </div>
                     <div class="col-2">
                         <h5 class="mt-1">Turn sequence</h5>
-                        <p id="turnSequence">
+                        <div id="turnSequenceContainer">
                             @isset($turnSequence)
                                 @isset($currentTurn['id'])
                                     @if ($userId != $currentTurn['id'])
-                                        <p>Opponent turn</p>
+                                        <p id="turnSequence">Opponent turn</p>
                                     @else
                                         @switch($turnSequence)
                                             @case(2)
-                                                <p>Purchasing of cards</p>
+                                                <p id="turnSequence">Purchasing of cards</p>
                                             @break
                                             @case(3)
-                                                <p>Combat</p>
+                                                <p id="turnSequence">Combat</p>
                                             @break
                                             @case(4)
-                                                <p>Draw and Discard</p>
+                                                <p id="turnSequence">Draw and Discard</p>
                                             @break
                                             @case(5)
-                                                <p>Select starting plots</p>
+                                                <p id="turnSequence">Select starting plots</p>
                                             @break
                                             @case(6)
-                                                <p>Discard 2 cards</p>
+                                                <p id="turnSequence">Discard 2 cards</p>
                                             @break
                                             @default
                                         @endswitch
                                     @endif
                                 @endisset
                             @endisset
-                        </p>
+                        </div>
                         <h5 class="mt-1">Options</h5>
                         <div id="options">
                             @isset($turnSequence)
@@ -58,10 +68,10 @@
                                     @else
                                         @switch($turnSequence)
                                             @case('2')
-                                                <button onclick="skipTurnSequence()">Skip</button>
+                                                <button class="btn btn-primary" onclick="skipTurnSequence()">Skip turn sequence</button>
                                             @break
                                             @case('3')
-                                                <button onclick="skipTurnSequence()">Skip</button>
+                                                <button class="btn btn-primary" onclick="skipTurnSequence()">Skip turn sequence</button>
                                             @break
                                             @case('4')
 
@@ -145,6 +155,17 @@
         let usersCount;
         let gameStarting = false;
         let selectedCards = [];
+        @if ($ownHand)
+            let ownHand = @json($ownHand)
+        @else
+            let ownHand = null;
+        @endif
+
+        @if ($notes)
+            let notes = @json($notes)
+        @else
+            let notes = null;
+        @endif
 
 
         Echo.join(`game.${id}`)
@@ -204,6 +225,13 @@
                 turnSequence = +data.turnSequence;
                 changeCurrentTurn();
                 changeTurnSequence();
+            });
+
+        Echo.private(`user.${userId}`)
+            .listen('PlayerSpecificInfo', (data) => {
+                ownHand = data.ownHand;
+                notes = data.notes;
+                updateNotes();
             });
 
     </script>

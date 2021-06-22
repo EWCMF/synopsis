@@ -6,11 +6,13 @@ use App\Classes\State;
 use App\Events\GameStarted;
 use App\Events\NewMove;
 use App\Events\PlayerJoined;
+use App\Events\PlayerSpecificInfo;
 use App\Models\Game;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GameController extends Controller
 {
@@ -55,11 +57,13 @@ class GameController extends Controller
         ];
 
         $cardsInHand = $state->getCardsInHand();
+        $playerNotes = $state->getPlayerNotes();
         switch ($game->max_players) {
             case 2:
                 foreach (array_keys($cardsInHand) as $key) {
                     if ($key == $user->id) {
                         $viewProperties['ownHand'] = $cardsInHand[$key];
+                        $viewProperties['notes'] = $playerNotes[$key];
                     } else {
                         $viewProperties['foeHand'] = $cardsInHand[$key];
                     }
@@ -149,7 +153,7 @@ class GameController extends Controller
 
         broadcast(new GameStarted($gameId, $state));
 
-        return response()->noContent(200);
+        return json_encode($state->getPlayerNotes()[$userId]);
     }
     public function selectCard(Request $request) {
         $userId = Auth::id();
@@ -168,7 +172,7 @@ class GameController extends Controller
     {
         $userId = Auth::id();
         $gameId = $request->input('game_id');
-        $cardIndex = $request->input('index');
+        $cardIndex = $request->input('cardIndex');
         $deck = $request->input('deck');
 
         $game = Game::find($gameId);
@@ -181,6 +185,9 @@ class GameController extends Controller
             $game->save();
 
             broadcast(new NewMove($gameId, $state));
+            foreach ($state->getPlayers() as $player) {
+                broadcast(new PlayerSpecificInfo($player['id'], $state));
+            }
 
             return response()->noContent(200);
         } else {
@@ -205,6 +212,9 @@ class GameController extends Controller
             $game->save();
 
             broadcast(new NewMove($gameId, $state));
+            foreach ($state->getPlayers() as $player) {
+                broadcast(new PlayerSpecificInfo($player['id'], $state));
+            }
 
             return response()->noContent(200);
         } else {
@@ -385,9 +395,9 @@ class GameController extends Controller
 
     public function debug() {
         $userId = Auth::id();
-        $gameId = 1;
+        $gameId = 3;
         $cardIndex = 0;
-        $deck = 'purchaseablePlots';
+        $deck = 'ownPlots';
 
         $game = Game::find($gameId);
 
@@ -395,6 +405,7 @@ class GameController extends Controller
 
         if ($state->pickCard($cardIndex, $deck, $userId)) {
 
+            dd($state);
             return "test";
         } else {
             return 'Error: not your turn';
