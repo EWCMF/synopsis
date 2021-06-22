@@ -34,6 +34,8 @@ Route::get('/debug', [GameController::class, 'debug']);
 Route::post('/request-current-view', [GameController::class, 'requestCurrentView']);
 Route::post('/request-plot-modal', [GameController::class, 'requestPlotModal']);
 Route::post('/request-plot-resource-modal', [GameController::class, 'requestPlotResourceModal']);
+Route::post('/request-plot-purchase-modal', [GameController::class, 'requestPlotPurchaseModal']);
 Route::post('/add-resources', [GameController::class, 'addResources']);
+Route::post('/purchase-plot', [GameController::class, 'plotPurchase']);
 Route::get('/debug-state/{id}', [HomeController::class, 'debugState']);
 Route::get('/debug-view', [HomeController::class, 'debugView']);

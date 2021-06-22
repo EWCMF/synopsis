@@ -41,7 +41,7 @@ class PlayerSpecificInfo implements ShouldBroadcast
     {
         return [
             'notes' => $this->state->getPlayerNotes()[$this->id],
-            'ownHand' => $this->state->getCarsInHandForUser($this->id),
+            'ownHand' => $this->state->getCardsInHandForUser($this->id),
         ];
     }
 }

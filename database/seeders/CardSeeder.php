@@ -5,8 +5,6 @@ namespace Database\Seeders;
 use App\Classes\BonusResourceCard;
 use App\Classes\BuildingCard;
 use App\Classes\PlotCard;
-use App\Classes\PopulationCard;
-use App\Classes\ResourceCard;
 use App\Classes\TechnologyCard;
 use App\Classes\UnitCard;
 use App\Classes\WonderCard;
@@ -24,7 +22,6 @@ class CardSeeder extends Seeder
     public function run()
     {
         $plotId = DB::table('card_types')->where('name', 'Plot')->value('id');
-        $populationId = DB::table('card_types')->where('name', 'Population')->value('id');
         $technologyId = DB::table('card_types')->where('name', 'Technology')->value('id');
         $unitId = DB::table('card_types')->where('name', 'Unit')->value('id');
         $buildingId = DB::table('card_types')->where('name', 'Building')->value('id');
@@ -81,14 +78,6 @@ class CardSeeder extends Seeder
             [
                 'card_type_id' => $bonusId,
                 'properties' => json_encode(new BonusResourceCard('2 Bonus Wild', 'Grants any of 2 resources when used', 8, 3)),
-                'created_at' => $createdAt,
-                'updated_at' => $updatedAt
-            ],
-
-            //Population cards
-            [
-                'card_type_id' => $populationId,
-                'properties' => json_encode(new PopulationCard('1 Population', 'Grants 1 population', 1, 48)),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],

@@ -147,6 +147,41 @@ function requestPlotResourceModal() {
     }));
 }
 
+function requestPlotPurchaseModal(index) {
+    let xhr = new XMLHttpRequest();
+    let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            let response = xhr.responseText;
+            document.getElementById('plot-purchase-modal-content').innerHTML = response;
+
+            if (!$('#plot-purchase-modal').hasClass('show')) {
+                $('#plot-purchase-modal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+
+                $('#plot-purchase-modal').modal('show');
+                return;
+            }
+
+            $('#plot-purchase-modal').on('hidden.bs.modal', function (e) {
+                document.getElementById('plot-purchase-modal-content').innerHTML = '';
+            });
+        }
+    }
+
+    xhr.open('POST', '/request-plot-purchase-modal');
+    xhr.setRequestHeader("X-CSRF-Token", csrf);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        'user_id': userId,
+        'game_id': id,
+        'cardIndex': index,
+    }));
+}
+
 function pickCard(cardIndex, deck, option = 0) {
     if (currentTurn['id'] != userId) {
         alert("It's not your turn");
@@ -338,7 +373,7 @@ function showCard(html, card, selectable) {
         case 2:
             if (card.type == 'Plot') {
                 if (html.dataset.deck == 'purchaseablePlots') {
-                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', '${html.dataset.deck}')">Purchase plot</button>`
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="purchasePlot('${html.dataset.index}')">Purchase plot for ${checkPlotPrice()}</button>`
                 } else if (html.dataset.deck == 'ownPlots') {
                     let price = checkPopulationPrice(html.dataset.index);
                     document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', '${html.dataset.deck}')">Purchase population for ${price}</button>`
@@ -358,6 +393,26 @@ function showCard(html, card, selectable) {
         default:
             break;
     }
+}
+
+function checkPlotPrice() {
+    return ownHand['plots'].length * 5 - 5;
+}
+
+function purchasePlot(index) {
+    if (currentTurn['id'] != userId) {
+        return;
+    }
+
+    let sum = ownHand['resources']['commerce'] + ownHand['resources']['food'] + ownHand['resources']['production']
+    let needed = checkPlotPrice();
+
+    if (sum < needed) {
+        alert("You lack enough resources");
+        return;
+    }
+
+    requestPlotPurchaseModal(index);
 }
 
 function checkPopulationPrice(cardIndex) {
@@ -544,4 +599,83 @@ function comfirmDistribution() {
             }
         }));
     }
+}
+
+function addPurchaseModal(id) {
+    let available = +document.getElementById(id).innerText;
+    let resourcesAdded = +document.getElementById('resourcesAdded').innerText;
+    let resourcesNeeded = +document.getElementById('resourcesNeeded').innerText;
+    if (available == 0 || resourcesAdded == resourcesNeeded) {
+        return;
+    }
+
+    available--
+    document.getElementById(id).innerText = available;
+
+    resourcesAdded++;
+    document.getElementById('resourcesAdded').innerText = resourcesAdded;
+    checkEnoughResourcesPlotPurchase();
+}
+
+function subtractPurchaseModal(id) {
+    let available = +document.getElementById(id).innerText;
+    let max = +document.getElementById(id + 'Max').innerText;
+    let resourcesAdded = +document.getElementById('resourcesAdded').innerText;
+    if (available == max) {
+        return;
+    }
+
+    available++
+    document.getElementById(id).innerText = available;
+
+    resourcesAdded--;
+    document.getElementById('resourcesAdded').innerText = resourcesAdded;
+    checkEnoughResourcesPlotPurchase();
+}
+
+function checkEnoughResourcesPlotPurchase() {
+    let resourcesAdded = +document.getElementById('resourcesAdded').innerText;
+    let resourcesNeeded = +document.getElementById('resourcesNeeded').innerText;
+    if (resourcesAdded == resourcesNeeded) {
+        document.getElementById('plotDistButton').disabled = false;
+        return true;
+    } else {
+        document.getElementById('plotDistButton').disabled = true;
+        return false;
+    }
+}
+
+function comfirmPlotPurchase() {
+    if (!checkEnoughResourcesPlotPurchase()) {
+        return;
+    }
+
+    document.getElementById('cardDescription').innerHTML = '';
+
+        let xhr = new XMLHttpRequest();
+        let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        let food = +document.getElementById('foodAvail').innerText;
+        let commerce = +document.getElementById('commerceAvail').innerText;
+        let production = +document.getElementById('productionAvail').innerText;
+
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+
+                $('#plot-purchase-modal').modal("hide");
+            }
+        }
+
+        xhr.open('POST', '/purchase-plot');
+        xhr.setRequestHeader("X-CSRF-Token", csrf);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            'game_id': id,
+            'resources': {
+                'food': food,
+                'commerce': commerce,
+                'production': production,
+            },
+            'cardIndex': document.getElementById('purchasedPlotIndex').value,
+        }));
 }

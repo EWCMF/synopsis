@@ -15,7 +15,6 @@ class State implements JsonSerializable
     private $playDeck = array();
     private $techDeck = array();
     private $plotDeck = array();
-    private $populationDeck = array();
     private $discardPile = array();
 
     private $playerNotes = array();
@@ -97,6 +96,7 @@ class State implements JsonSerializable
             array_pop($this->plotDeck),
         ];
     }
+
 
     public function pickCard($cardIndex, $deck, $userId, $option)
     {
@@ -468,6 +468,45 @@ class State implements JsonSerializable
         }
     }
 
+    public function purchasePlot($playerId, $cardIndex, $resourceDistribution) {
+        if ($playerId != $this->currentTurn['id']) {
+            return false;
+        }
+
+        $commerce = $resourceDistribution['commerce'];
+        $food = $resourceDistribution['food'];
+        $production = $resourceDistribution['production'];
+
+        $diffCommerce = $this->cardsOnHand[$playerId]['resources']['commerce'] - $commerce;
+        $diffFood = $this->cardsOnHand[$playerId]['resources']['food'] - $food;
+        $diffProduction = $this->cardsOnHand[$playerId]['resources']['production'] - $production;
+
+        $sum = $diffCommerce + $diffFood + $diffProduction;
+        $needed = $this->getNeededResourcesForPlotForUser($playerId);
+        if ($sum != $needed) {
+            return false;
+        }
+
+
+        $this->cardsOnHand[$playerId]['resources']['commerce'] = $commerce;
+        $this->cardsOnHand[$playerId]['resources']['food'] = $food;
+        $this->cardsOnHand[$playerId]['resources']['production'] = $production;
+
+        $card = array_splice($this->purchaseablePlots, $cardIndex, 1);
+        array_push($this->cardsOnHand[$playerId]['plots'], $card[0]);
+        array_push(
+            $this->purchaseablePlots,
+            array_pop($this->plotDeck),
+        );
+        $this->currentMessageToLog = $this->currentTurn['name'] . " has purchased a plot";
+        return true;
+    }
+
+    public function getNeededResourcesForPlotForUser($playerId) {
+        $plots = count($this->cardsOnHand[$playerId]['plots']);
+        return $plots * 5 - 5;
+    }
+
     public function checkPopulationCount($playerId)
     {
         $populationCount = 0;
@@ -547,7 +586,6 @@ class State implements JsonSerializable
     public function newState()
     {
         $plotId = DB::table('card_types')->where('name', 'Plot')->value('id');
-        $populationId = DB::table('card_types')->where('name', 'Population')->value('id');
         $technologyId = DB::table('card_types')->where('name', 'Technology')->value('id');
         $unitId = DB::table('card_types')->where('name', 'Unit')->value('id');
         $buildingId = DB::table('card_types')->where('name', 'Building')->value('id');
@@ -578,22 +616,6 @@ class State implements JsonSerializable
                 array_push(
                     $this->plotDeck,
                     new PlotCard(
-                        $json->name,
-                        $json->specialEffect,
-                        $json->specialEffectId,
-                        $json->maxCardsInDeck
-                    )
-                );
-            }
-        }
-
-        $populationCards = Card::where('card_type_id', $populationId)->get();
-        foreach ($populationCards as $populationCard) {
-            $json = json_decode($populationCard->properties);
-            for ($i = 0; $i < $json->maxCardsInDeck; $i++) {
-                array_push(
-                    $this->populationDeck,
-                    new PopulationCard(
                         $json->name,
                         $json->specialEffect,
                         $json->specialEffectId,
@@ -712,7 +734,7 @@ class State implements JsonSerializable
         return $this->cardsOnHand;
     }
 
-    public function getCarsInHandForUser($id)
+    public function getCardsInHandForUser($id)
     {
         return $this->cardsOnHand[$id];
     }

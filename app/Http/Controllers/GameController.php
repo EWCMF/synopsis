@@ -180,6 +180,31 @@ class GameController extends Controller
         }
     }
 
+    public function plotPurchase(Request $request) {
+        $userId = Auth::id();
+        $gameId = $request->input('game_id');
+        $resources = $request->input('resources');
+        $cardIndex = $request->input('cardIndex');
+
+        $game = Game::find($gameId);
+        $state = new State($game->state);
+
+        if ($state->purchasePlot($userId, $cardIndex, $resources)) {
+
+            $game->state = json_encode($state);
+            $game->save();
+
+            broadcast(new NewMove($gameId, $state));
+            foreach ($state->getPlayers() as $player) {
+                broadcast(new PlayerSpecificInfo($player['id'], $state));
+            }
+
+            return response()->noContent(200);
+        } else {
+            return 'Error: not your turn';
+        }
+    }
+
 
     public function makeMove(Request $request)
     {
@@ -376,6 +401,35 @@ class GameController extends Controller
         return view('modals.plot-resource-dist', $viewProperties);
     }
 
+    public function requestPlotPurchaseModal(Request $request)
+    {
+        $userId = Auth::id();
+        $gameId = $request->input('game_id');
+        $plotCardIndex = $request->input('cardIndex');
+
+        $allowed = DB::table('game_user')->where([
+            'user_id' => $userId,
+            'game_id' => $gameId,
+        ])->exists();
+
+        if (!$allowed) {
+            return response('Not authorized', 403);
+        }
+
+        $state = new State(Game::find($gameId)->state);
+        $resourcesAvailable = $state->getCardsInHandForUser($userId)['resources'];
+        $needed = $state->getNeededResourcesForPlotForUser($userId);
+
+        $viewProperties = [
+            'resources' => $resourcesAvailable,
+            'needed' => $needed,
+            'plotCardIndex' => $plotCardIndex,
+        ];
+
+        return view('modals.plot-purchase-dist', $viewProperties);
+    }
+
+
     public function playerChangePlayingState(Request $request)
     {
         $userId = $request->input('user_id');
@@ -391,6 +445,8 @@ class GameController extends Controller
 
         return response()->noContent(200);
     }
+
+
 
     public function listGames()
     {
@@ -433,25 +489,27 @@ class GameController extends Controller
 
     public function debug() {
         $userId = Auth::id();
-        $gameId = 14;
-        $cardIndex = 0;
-        $deck = 'ownPlots';
-        $option = 0;
+        $gameId = 15;
 
-        $game = Game::find($gameId);
+        $allowed = DB::table('game_user')->where([
+            'user_id' => $userId,
+            'game_id' => $gameId,
+        ])->exists();
 
-        $state = new State($game->state);
-
-        dd($state);
-
-        if ($state->pickCard($cardIndex, $deck, $userId, $option)) {
-
-            dd($state);
-            return "test";
-        } else {
-            return 'Error: not your turn';
+        if (!$allowed) {
+            return response('Not authorized', 403);
         }
 
+        $state = new State(Game::find($gameId)->state);
+        $resourcesAvailable = $state->getCardsInHandForUser($userId)['resources'];
+        $needed = $state->getNeededResourcesForPlotForUser($userId);
+
+        $viewProperties = [
+            'resources' => $resourcesAvailable,
+            'needed' => $needed,
+        ];
+
+        return view('modals.plot-purchase-dist', $viewProperties);
 
     }
 }

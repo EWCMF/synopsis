@@ -136,7 +136,6 @@
         </div>
     </div>
 
-    @include('modals.game-modal')
     <div id="plot-modal" class="modal" tabindex="-1">
         <div class="modal-dialog modal-xl">
             <div class="modal-content light-grey" id="modal-content"></div>
@@ -145,6 +144,11 @@
     <div id="plot-resource-modal" class="modal" tabindex="-1">
         <div class="modal-dialog modal-xl">
             <div class="modal-content light-grey" id="resource-modal-content"></div>
+        </div>
+    </div>
+    <div id="plot-purchase-modal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content light-grey" id="plot-purchase-modal-content"></div>
         </div>
     </div>
 
@@ -249,6 +253,9 @@
                 ownHand = data.ownHand;
                 notes = data.notes;
                 updateNotes();
+                if (turnSequence == 1 && currentTurn['id'] == userId ) {
+                    requestPlotResourceModal();
+                }
             });
 
     </script>
