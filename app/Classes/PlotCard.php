@@ -10,6 +10,8 @@ class PlotCard implements JsonSerializable {
     private string $specialEffect;
     private int $specialEffectId;
     private int $maxCardsInDeck;
+    private int $attachedPopulation = 0;
+    private $attachedBuildings = array();
 
     public function __construct($name, $specialEffect, $specialEffectId, $maxCardsInDeck) {
         $this->name = $name;
@@ -36,6 +38,28 @@ class PlotCard implements JsonSerializable {
 
     public function getMaxCardsInDeck() {
         return $this->maxCardsInDeck;
+    }
+
+    public function addPopulation(int $number) {
+        $this->attachedPopulation += $number;
+    }
+
+    public function subtractPopulation(int $number) {
+        $this->attachedPopulation -= $number;
+    }
+
+    public function addBuildings(...$cards) {
+        array_push($this->attachedBuildings, $cards);
+    }
+
+    public function subtractBuildings(...$cards) {
+        foreach ($cards as $card) {
+            unset($this->attachedBuildings, $card);
+        }
+    }
+
+    public function getAttachedPopulation() {
+        return $this->attachedPopulation;
     }
 
     public function jsonSerialize() {

@@ -23,51 +23,54 @@
                         <h5 class="mt-1">Turn sequence</h5>
                         <p id="turnSequence">
                             @isset($turnSequence)
-                                @if ($userId != $currentTurn['id'])
-                                    <p>Opponent turn</p>
-                                @else
-                                    @switch($turnSequence)
-                                        @case(2)
-                                            <p>Purchasing of cards</p>
-                                        @break
-                                        @case(3)
-                                            <p>Combat</p>
-                                        @break
-                                        @case(4)
-                                            <p>Draw and Discard</p>
-                                        @break
-                                        @case(5)
-                                            <p>Select starting plots</p>
-                                        @break
-                                        @case(6)
-                                            <p>Discard 2 cards</p>
-                                        @break
-                                        @default
-                                    @endswitch
-                                @endif
-
+                                @isset($currentTurn['id'])
+                                    @if ($userId != $currentTurn['id'])
+                                        <p>Opponent turn</p>
+                                    @else
+                                        @switch($turnSequence)
+                                            @case(2)
+                                                <p>Purchasing of cards</p>
+                                            @break
+                                            @case(3)
+                                                <p>Combat</p>
+                                            @break
+                                            @case(4)
+                                                <p>Draw and Discard</p>
+                                            @break
+                                            @case(5)
+                                                <p>Select starting plots</p>
+                                            @break
+                                            @case(6)
+                                                <p>Discard 2 cards</p>
+                                            @break
+                                            @default
+                                        @endswitch
+                                    @endif
+                                @endisset
                             @endisset
                         </p>
                         <h5 class="mt-1">Options</h5>
                         <div id="options">
                             @isset($turnSequence)
-                                @if ($userId != $currentTurn['id'])
+                                @isset($currentTurn['id'])
+                                    @if ($userId != $currentTurn['id'])
 
-                                @else
-                                    @switch($turnSequence)
-                                        @case('2')
-                                            <button onclick="skipTurnSequence()">Skip</button>
-                                        @break
-                                        @case('3')
-                                            <button onclick="skipTurnSequence()">Skip</button>
-                                        @break
-                                        @case('4')
+                                    @else
+                                        @switch($turnSequence)
+                                            @case('2')
+                                                <button onclick="skipTurnSequence()">Skip</button>
+                                            @break
+                                            @case('3')
+                                                <button onclick="skipTurnSequence()">Skip</button>
+                                            @break
+                                            @case('4')
 
-                                            @default
-                                        @endswitch
-                                    @endif
+                                                @default
+                                            @endswitch
+                                        @endif
 
 
+                                    @endisset
                                 @endisset
                         </div>
                     </div>
@@ -156,6 +159,9 @@
                     checkCanStart(usersCount);
                 } else {
                     requestCurrentGameView();
+                    if (turnSequence == 5) {
+                        requestPlotModal();
+                    }
                 }
 
             })

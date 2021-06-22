@@ -59,6 +59,9 @@ class State implements JsonSerializable
             'food' => 0,
             'commerce' => 0,
             'production' => 0,
+            'culture' => 0,
+            'happiness' => 0,
+            'victoryPoints' => 0,
         );
         $this->cardsOnHand[$player['id']]['hand'] = array();
     }
@@ -99,9 +102,9 @@ class State implements JsonSerializable
 
         switch ($deck) {
             case 'purchaseablePlots':
-                $card = array_splice($this->purchaseablePlots, $cardIndex, 1);
-                array_push($this->cardsOnHand[$userId]['plots'], $card[0]);
                 if ($this->turnSequence == 5) {
+                    $card = array_splice($this->purchaseablePlots, $cardIndex, 1);
+                    array_push($this->cardsOnHand[$userId]['plots'], $card[0]);
                     $this->checkStartingPlots();
                 } else {
                     $this->currentMessageToLog = '';
@@ -223,6 +226,21 @@ class State implements JsonSerializable
         }
 
         if (empty($this->purchaseablePlots)) {
+            $firstKey = array_key_first($this->cardsOnHand);
+            if (count($this->cardsOnHand[$firstKey]['plots']) == 3) {
+                $this->purchaseablePlots = [
+                    array_pop($this->plotDeck),
+                    array_pop($this->plotDeck),
+                ];
+                $this->players = array_reverse($this->players);
+                $this->currentTurn = $this->players[0];
+                $this->currentMessageToLog = 'Starting plot selected. A new set of plots have been placed. Current turn is now: ' . $this->currentTurn['name'];
+                return;
+            }
+
+            $this->players = array_reverse($this->players);
+            $this->currentTurn = $this->players[0];
+
             $this->turnSequence = 6;
             array_push($this->purchaseablePlots,
                 array_pop($this->plotDeck),
@@ -244,7 +262,7 @@ class State implements JsonSerializable
 
             $this->currentMessageToLog = 'All starting plots selected. 2 Cards must now be discarded by each player';
         } else {
-            $this->currentMessageToLog = 'Starting plot selected. Current turn is now: ' . $player['name'];
+            $this->currentMessageToLog = 'Starting plot selected. Current turn is now: ' . $this->currentTurn['name'];
         }
     }
 
@@ -271,7 +289,7 @@ class State implements JsonSerializable
 
             $this->currentMessageToLog = 'Cards discarded. Game can begin';
         } else {
-            $this->currentMessageToLog = '2 cards have been discarded. Current turn is now: ' . $player['name'];
+            $this->currentMessageToLog = '2 cards have been discarded. Current turn is now: ' . $this->currentTurn['name'];
         }
     }
 

@@ -8,6 +8,9 @@
                         <p>Commerce: {{$foeHand['resources']['commerce']}}</p>
                         <p>Food: {{$foeHand['resources']['food']}}</p>
                         <p>Production: {{$foeHand['resources']['production']}}</p>
+                        <p>Culture: {{$foeHand['resources']['culture']}}</p>
+                        <p>Happiness: {{$foeHand['resources']['happiness']}}</p>
+                        <p>Victory points: {{$foeHand['resources']['victoryPoints']}}</p>
                     @endisset
                 </div>
             </div>
@@ -124,6 +127,9 @@
                         <p>Commerce: {{$ownHand['resources']['commerce']}}</p>
                         <p>Food: {{$ownHand['resources']['food']}}</p>
                         <p>Production: {{$ownHand['resources']['production']}}</p>
+                        <p>Culture: {{$ownHand['resources']['culture']}}</p>
+                        <p>Happiness: {{$ownHand['resources']['happiness']}}</p>
+                        <p>Victory points: {{$ownHand['resources']['victoryPoints']}}</p>
                     @endisset
                 </div>
 

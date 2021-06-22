@@ -385,19 +385,21 @@ class GameController extends Controller
 
     public function debug() {
         $userId = Auth::id();
-        $gameId = 4;
-        $cardIndexes = [1, 3];
-        $deck = 'playDeck';
+        $gameId = 1;
+        $cardIndex = 0;
+        $deck = 'purchaseablePlots';
 
         $game = Game::find($gameId);
 
         $state = new State($game->state);
 
-        if ($state->pickCards($cardIndexes, $deck, $userId)) {
+        if ($state->pickCard($cardIndex, $deck, $userId)) {
 
             return "test";
         } else {
             return 'Error: not your turn';
         }
+
+
     }
 }
