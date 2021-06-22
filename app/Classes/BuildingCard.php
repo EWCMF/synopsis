@@ -6,7 +6,7 @@ use JsonSerializable;
 
 class BuildingCard implements JsonSerializable {
     private string $name;
-    private string $type = 'building';
+    private string $type = 'Building';
     private int $cost;
     private string $specialEffect;
     private int $specialEffectId;

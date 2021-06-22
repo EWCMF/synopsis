@@ -187,12 +187,13 @@ class GameController extends Controller
         $gameId = $request->input('game_id');
         $cardIndex = $request->input('cardIndex');
         $deck = $request->input('deck');
+        $option = $request->input('option');
 
         $game = Game::find($gameId);
 
         $state = new State($game->state);
 
-        if ($state->pickCard($cardIndex, $deck, $userId)) {
+        if ($state->pickCard($cardIndex, $deck, $userId, $option)) {
 
             $game->state = json_encode($state);
             $game->save();
@@ -432,15 +433,18 @@ class GameController extends Controller
 
     public function debug() {
         $userId = Auth::id();
-        $gameId = 3;
+        $gameId = 14;
         $cardIndex = 0;
         $deck = 'ownPlots';
+        $option = 0;
 
         $game = Game::find($gameId);
 
         $state = new State($game->state);
 
-        if ($state->pickCard($cardIndex, $deck, $userId)) {
+        dd($state);
+
+        if ($state->pickCard($cardIndex, $deck, $userId, $option)) {
 
             dd($state);
             return "test";

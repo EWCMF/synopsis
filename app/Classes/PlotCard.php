@@ -6,7 +6,7 @@ use JsonSerializable;
 
 class PlotCard implements JsonSerializable {
     private string $name;
-    private string $type = 'plot';
+    private string $type = 'Plot';
     private string $specialEffect;
     private int $specialEffectId;
     private int $maxCardsInDeck;

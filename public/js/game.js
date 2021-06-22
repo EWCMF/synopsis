@@ -147,7 +147,7 @@ function requestPlotResourceModal() {
     }));
 }
 
-function pickCard(cardIndex, deck) {
+function pickCard(cardIndex, deck, option = 0) {
     if (currentTurn['id'] != userId) {
         alert("It's not your turn");
         return;
@@ -162,7 +162,8 @@ function pickCard(cardIndex, deck) {
     xhr.send(JSON.stringify({
         'game_id': id,
         'cardIndex': cardIndex,
-        'deck': deck
+        'deck': deck,
+        'option': option,
     }));
 
     document.getElementById('cardDescription').innerHTML = '';
@@ -272,37 +273,37 @@ function updatePlayerStatusInDB(userId, isPlaying) {
 function showCard(html, card, selectable) {
     let newHtml;
     switch (card.type) {
-        case "building":
+        case "Building":
             newHtml = `<p>Name: ${card.name}</p><p>Type: ${card.type}</p><p>Cost: ${card.cost}</p><p>Special effect: ${card.specialEffect}</p>`;
             document.getElementById('cardDescription').innerHTML = newHtml;
             break;
 
-        case "technology":
+        case "Technology":
             newHtml = `<p>Name: ${card.name}</p><p>Type: ${card.type}</p><p>Cost: ${card.cost}</p><p>Special effect: ${card.specialEffect}</p>`;
             document.getElementById('cardDescription').innerHTML = newHtml;
             break;
 
-        case "unit":
+        case "Unit":
             newHtml = `<p>Name: ${card.name}</p><p>Type: ${card.type}</p><p>Special effect: ${card.specialEffect}</p>`;
             document.getElementById('cardDescription').innerHTML = newHtml;
             break;
 
-        case "wonder":
+        case "Wonder":
             newHtml = `<p>Name: ${card.name}</p><p>Type: ${card.type}</p><p>Cost: ${card.cost}</p><p>Special effect: ${card.specialEffect}</p>`;
             document.getElementById('cardDescription').innerHTML = newHtml;
             break;
 
-        case "plot":
+        case "Plot":
             newHtml = `<p>Name: ${card.name}</p><p>Type: ${card.type}</p><p>Special effect: ${card.specialEffect}</p>`;
             document.getElementById('cardDescription').innerHTML = newHtml;
             break;
 
-        case "bonusResource":
+        case "Bonus resource":
             newHtml = `<p>Name: ${card.name}</p><p>Type: ${card.type}</p><p>Special effect: ${card.specialEffect}</p>`;
             document.getElementById('cardDescription').innerHTML = newHtml;
             break;
 
-        case "population":
+        case "Population":
             newHtml = `<p>Name: ${card.name}</p><p>Type: ${card.type}</p><p>Special effect: ${card.specialEffect}</p>`;
             document.getElementById('cardDescription').innerHTML = newHtml;
             break;
@@ -316,23 +317,41 @@ function showCard(html, card, selectable) {
     }
 
     if (selectable) {
-        if (document.getElementById('selectedCards').contains(html)) {
-            document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="removeFromSelected('${html.id}')">Remove from selected</button>`
-        } else {
-            document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="addToSelected('${html.id}')">Add to selected</button>`
+        if (turnSequence == 4 || turnSequence == 6) {
+            if (document.getElementById('selectedCards').contains(html)) {
+                document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="removeFromSelected('${html.id}')">Remove from selected</button>`
+            } else {
+                document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="addToSelected('${html.id}')">Add to selected</button>`
+            }
+        } else if (turnSequence == 3) {
+            if (card.type == 'Unit') {
+                if (document.getElementById('selectedCards').contains(html)) {
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="removeFromSelected('${html.id}')">Remove from selected</button>`
+                } else {
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="addToSelected('${html.id}')">Add to selected</button>`
+                }
+            }
         }
-        return;
     }
 
     switch (turnSequence) {
         case 2:
-            if (card.type == 'plot') {
+            if (card.type == 'Plot') {
                 if (html.dataset.deck == 'purchaseablePlots') {
                     document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', '${html.dataset.deck}')">Purchase plot</button>`
                 } else if (html.dataset.deck == 'ownPlots') {
                     let price = checkPopulationPrice(html.dataset.index);
                     document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', '${html.dataset.deck}')">Purchase population for ${price}</button>`
                 }
+            } else if (card.type == 'Bonus resource') {
+                if (card.specialEffectId == 7 || card.specialEffectId == 8) {
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', 'bonusResource', 1)">Add to resources as commerce</button>`
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', 'bonusResource', 2)">Add to resources as food</button>`
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', 'bonusResource', 3)">Add to resources as production</button>`
+                } else {
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', 'bonusResource')">Add to resources</button>`
+                }
+
             }
             break;
 

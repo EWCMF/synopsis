@@ -6,7 +6,7 @@ use JsonSerializable;
 
 class TechnologyCard implements JsonSerializable {
     private string $name;
-    private string $type = 'technology';
+    private string $type = 'Technology';
     private int $cost;
     private string $specialEffect;
     private int $specialEffectId;

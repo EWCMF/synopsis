@@ -6,7 +6,7 @@ use JsonSerializable;
 
 class BonusResourceCard implements JsonSerializable {
     private string $name;
-    private string $type = 'bonusResource';
+    private string $type = 'Bonus resource';
     private string $specialEffect;
     private int $specialEffectId;
     private int $maxCardsInDeck;

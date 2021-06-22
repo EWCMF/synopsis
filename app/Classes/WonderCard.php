@@ -6,7 +6,7 @@ use JsonSerializable;
 
 class WonderCard implements JsonSerializable {
     private string $name;
-    private string $type = 'wonder';
+    private string $type = 'Wonder';
     private int $cost;
     private string $specialEffect;
     private int $specialEffectId;

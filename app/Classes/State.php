@@ -98,7 +98,8 @@ class State implements JsonSerializable
         ];
     }
 
-    public function pickCard($cardIndex, $deck, $userId) {
+    public function pickCard($cardIndex, $deck, $userId, $option)
+    {
         if ($userId != $this->currentTurn['id']) {
             return false;
         }
@@ -123,12 +124,79 @@ class State implements JsonSerializable
                         return true;
                     }
                 }
+
+            case 'bonusResource':
+                if ($this->turnSequence == 2) {
+                    $this->currentMessageToLog = $this->currentTurn['name'] . " has gathered bonus resource.";
+                    if ($option != 0) {
+                        if ($option == 1) {
+                            $specialEffectId = $this->cardsOnHand[$userId]['hand'][$cardIndex]['specialEffectId'];
+                            if ($specialEffectId == 7) {
+                                $this->cardsOnHand[$userId]['resources']['commerce'] += 1;
+                            } else {
+                                $this->cardsOnHand[$userId]['resources']['commerce'] += 2;
+                            }
+                        } else if ($option == 2) {
+                            $specialEffectId = $this->cardsOnHand[$userId]['hand'][$cardIndex]['specialEffectId'];
+                            if ($specialEffectId == 7) {
+                                $this->cardsOnHand[$userId]['resources']['food'] += 1;
+                            } else {
+                                $this->cardsOnHand[$userId]['resources']['food'] += 2;
+                            }
+                        } else {
+                            $specialEffectId = $this->cardsOnHand[$userId]['hand'][$cardIndex]['specialEffectId'];
+                            if ($specialEffectId == 7) {
+                                $this->cardsOnHand[$userId]['resources']['production'] += 1;
+                            } else {
+                                $this->cardsOnHand[$userId]['resources']['production'] += 2;
+                            }
+                        }
+
+                        unset($this->cardsOnHand[$userId]['hand'][$cardIndex]);
+                        $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
+                        return true;
+                    } else {
+                        switch ($this->cardsOnHand[$userId]['hand'][$cardIndex]['specialEffectId']) {
+                            case 1:
+                                $this->cardsOnHand[$userId]['resources']['commerce'] += 2;
+                                break;
+
+                            case 2:
+                                $this->cardsOnHand[$userId]['resources']['commerce'] += 3;
+                                break;
+
+                            case 3:
+                                $this->cardsOnHand[$userId]['resources']['production'] += 2;
+                                break;
+
+                            case 4:
+                                $this->cardsOnHand[$userId]['resources']['production'] += 3;
+                                break;
+
+                            case 5:
+                                $this->cardsOnHand[$userId]['resources']['food'] += 2;
+                                break;
+
+                            case 6:
+                                $this->cardsOnHand[$userId]['resources']['food'] += 3;
+                                break;
+
+                            default:
+                                return false;
+                        }
+
+                        unset($this->cardsOnHand[$userId]['hand'][$cardIndex]);
+                        $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
+                        return true;
+                    }
+                }
         }
 
         return false;
     }
 
-    public function pickCards($cardIndexes, $deck, $userId) {
+    public function pickCards($cardIndexes, $deck, $userId)
+    {
         if ($userId != $this->currentTurn['id']) {
             return false;
         }
@@ -171,7 +239,6 @@ class State implements JsonSerializable
                             } else {
                                 $this->turnSequence = 2;
                             }
-
                         }
                         $this->addResources();
                         return true;
@@ -193,7 +260,8 @@ class State implements JsonSerializable
         }
     }
 
-    public function changePlayer() {
+    public function changePlayer()
+    {
         $lastPlayer = end($this->players);
         foreach ($this->players as $player) {
             if ($player['id'] == $this->currentTurn['id']) {
@@ -212,7 +280,8 @@ class State implements JsonSerializable
         $this->updateNotes($this->currentTurn['id']);
     }
 
-    public function skipTurnSequence($userId) {
+    public function skipTurnSequence($userId)
+    {
         if ($userId != $this->currentTurn['id']) {
             return false;
         }
@@ -232,14 +301,16 @@ class State implements JsonSerializable
         }
     }
 
-    public function drawCards() {
+    public function drawCards()
+    {
         $cardsToDraw = 4;
         for ($i = 0; $i < $cardsToDraw; $i++) {
             array_push($this->cardsOnHand[$this->currentTurn['id']]['hand'], array_pop($this->playDeck));
         }
     }
 
-    public function checkStartingPlots() {
+    public function checkStartingPlots()
+    {
         $lastPlayer = end($this->players);
         foreach ($this->players as $player) {
             if ($player['id'] == $this->currentTurn['id']) {
@@ -271,15 +342,19 @@ class State implements JsonSerializable
             $this->currentTurn = $this->players[0];
 
             $this->turnSequence = 6;
-            array_push($this->purchaseablePlots,
+            array_push(
+                $this->purchaseablePlots,
                 array_pop($this->plotDeck),
                 array_pop($this->plotDeck),
-                array_pop($this->plotDeck));
+                array_pop($this->plotDeck)
+            );
 
-            array_push($this->purchaseableTechs,
+            array_push(
+                $this->purchaseableTechs,
                 array_pop($this->techDeck),
                 array_pop($this->techDeck),
-                array_pop($this->techDeck));
+                array_pop($this->techDeck)
+            );
 
             $cardsToDraw = 6;
             foreach ($this->players as $player) {
@@ -295,7 +370,8 @@ class State implements JsonSerializable
         }
     }
 
-    public function checkStartingDiscards() {
+    public function checkStartingDiscards()
+    {
         $lastPlayer = end($this->players);
         foreach ($this->players as $player) {
             if ($player['id'] == $this->currentTurn['id']) {
@@ -323,7 +399,8 @@ class State implements JsonSerializable
         }
     }
 
-    public function addResources() {
+    public function addResources()
+    {
         $currentId = $this->currentTurn['id'];
 
         foreach ($this->cardsOnHand[$currentId]['plots'] as $plot) {
@@ -383,14 +460,16 @@ class State implements JsonSerializable
         }
     }
 
-    public function updateNotes($playerId) {
+    public function updateNotes($playerId)
+    {
         $this->playerNotes[$playerId] = array();
         if (!$this->cardsOnHand[$playerId]['freePopUsed']) {
             array_push($this->playerNotes[$playerId], "One free population available for any plot.");
         }
     }
 
-    public function checkPopulationCount($playerId) {
+    public function checkPopulationCount($playerId)
+    {
         $populationCount = 0;
         foreach ($this->cardsOnHand[$playerId]['plots'] as $plot) {
             $populationCount += $plot['attachedPopulation'];
@@ -398,7 +477,8 @@ class State implements JsonSerializable
         return $populationCount;
     }
 
-    public function checkCanPurchasePopulation($playerId, $cardIndex) {
+    public function checkCanPurchasePopulation($playerId, $cardIndex)
+    {
         if (!$this->cardsOnHand[$playerId]['freePopUsed']) {
             $this->cardsOnHand[$playerId]['freePopUsed'] = true;
             $this->updateNotes($playerId);
@@ -413,7 +493,8 @@ class State implements JsonSerializable
         return $food >= $price;
     }
 
-    public function getHybridPlotsForId($playerId) {
+    public function getHybridPlotsForId($playerId)
+    {
         $plots = $this->cardsOnHand[$playerId]['plots'];
 
         $hybridPlots = array();
@@ -421,7 +502,8 @@ class State implements JsonSerializable
             if ($plot['attachedPopulation'] == 0) {
                 continue;
             }
-            if ($plot['specialEffectId'] == 4 ||
+            if (
+                $plot['specialEffectId'] == 4 ||
                 $plot['specialEffectId'] == 5 ||
                 $plot['specialEffectId'] == 6
             ) {
@@ -432,7 +514,8 @@ class State implements JsonSerializable
         return $hybridPlots;
     }
 
-    public function addResourceDistribution($playerId, $resources) {
+    public function addResourceDistribution($playerId, $resources)
+    {
         if ($playerId != $this->currentTurn['id']) {
             return false;
         }
@@ -629,39 +712,48 @@ class State implements JsonSerializable
         return $this->cardsOnHand;
     }
 
-    public function getCarsInHandForUser($id) {
+    public function getCarsInHandForUser($id)
+    {
         return $this->cardsOnHand[$id];
     }
 
-    public function getPlayDeck() {
+    public function getPlayDeck()
+    {
         return $this->playDeck;
     }
 
-    public function getDiscardPile() {
+    public function getDiscardPile()
+    {
         return $this->discardPile;
     }
 
-    public function getPurchaseablePlots() {
+    public function getPurchaseablePlots()
+    {
         return $this->purchaseablePlots;
     }
 
-    public function getPurchaseableTechs() {
+    public function getPurchaseableTechs()
+    {
         return $this->purchaseableTechs;
     }
 
-    public function getAttacking() {
+    public function getAttacking()
+    {
         return $this->attacking;
     }
 
-    public function getDefending() {
+    public function getDefending()
+    {
         return $this->defending;
     }
 
-    public function getCurrentMessageToLog() {
+    public function getCurrentMessageToLog()
+    {
         return $this->currentMessageToLog;
     }
 
-    public function getPlayerNotes() {
+    public function getPlayerNotes()
+    {
         return $this->playerNotes;
     }
 }
