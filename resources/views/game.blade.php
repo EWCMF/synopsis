@@ -23,21 +23,24 @@
                         <h5 class="mt-1">Notes</h5>
                         <div id="playerNotes">
                             @isset($notes)
-                            @foreach ($notes as $note)
-                            <p>{{$note}}</p>
-                            @endforeach
+                                @foreach ($notes as $note)
+                                    <p>{{ $note }}</p>
+                                @endforeach
                             @endisset
                         </div>
                     </div>
                     <div class="col-2">
                         <h5 class="mt-1">Turn sequence</h5>
                         <div id="turnSequenceContainer">
-                            @isset($turnSequence)
-                                @isset($currentTurn['id'])
+                            @if (isset($turnSequence))
+                                @if (isset($currentTurn['id']))
                                     @if ($userId != $currentTurn['id'])
                                         <p id="turnSequence">Opponent turn</p>
                                     @else
                                         @switch($turnSequence)
+                                            @case(1)
+                                                <p id="turnSequence">Distribute resources</p>
+                                            @break
                                             @case(2)
                                                 <p id="turnSequence">Purchasing of cards</p>
                                             @break
@@ -54,10 +57,15 @@
                                                 <p id="turnSequence">Discard 2 cards</p>
                                             @break
                                             @default
+                                                <p id="turnSequence"></p>
                                         @endswitch
                                     @endif
-                                @endisset
-                            @endisset
+                                @else
+                                    <p id="turnSequence"></p>
+                                @endif
+                            @else
+                                <p id="turnSequence"></p>
+                            @endif
                         </div>
                         <h5 class="mt-1">Options</h5>
                         <div id="options">
@@ -134,6 +142,11 @@
             <div class="modal-content light-grey" id="modal-content"></div>
         </div>
     </div>
+    <div id="plot-resource-modal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content light-grey" id="resource-modal-content"></div>
+        </div>
+    </div>
 
 
 
@@ -182,6 +195,10 @@
                     requestCurrentGameView();
                     if (turnSequence == 5) {
                         requestPlotModal();
+                        return;
+                    }
+                    if (turnSequence == 1 && currentTurn['id'] == userId ) {
+                        requestPlotResourceModal();
                     }
                 }
 

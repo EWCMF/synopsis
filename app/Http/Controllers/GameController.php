@@ -155,16 +155,29 @@ class GameController extends Controller
 
         return json_encode($state->getPlayerNotes()[$userId]);
     }
-    public function selectCard(Request $request) {
+
+    public function addResources(Request $request) {
         $userId = Auth::id();
         $gameId = $request->input('game_id');
-        $cardIndex = $request->input('index');
-        $deck = $request->input('deck');
+        $resources = $request->input('resources');
 
         $game = Game::find($gameId);
         $state = new State($game->state);
 
+        if ($state->addResourceDistribution($userId, $resources)) {
 
+            $game->state = json_encode($state);
+            $game->save();
+
+            broadcast(new NewMove($gameId, $state));
+            foreach ($state->getPlayers() as $player) {
+                broadcast(new PlayerSpecificInfo($player['id'], $state));
+            }
+
+            return response()->noContent(200);
+        } else {
+            return 'Error: not your turn';
+        }
     }
 
 
@@ -336,6 +349,30 @@ class GameController extends Controller
         }
 
         return view('modals.plot-modal-content', $viewProperties);
+    }
+
+    public function requestPlotResourceModal(Request $request)
+    {
+        $userId = Auth::id();
+        $gameId = $request->input('game_id');
+
+        $allowed = DB::table('game_user')->where([
+            'user_id' => $userId,
+            'game_id' => $gameId,
+        ])->exists();
+
+        if (!$allowed) {
+            return response('Not authorized', 403);
+        }
+
+        $state = new State(Game::find($gameId)->state);
+            $hybridPlots = $state->getHybridPlotsForId($userId);
+
+        $viewProperties = [
+            'hybridPlots' => $hybridPlots
+        ];
+
+        return view('modals.plot-resource-dist', $viewProperties);
     }
 
     public function playerChangePlayingState(Request $request)

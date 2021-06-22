@@ -113,6 +113,40 @@ function requestPlotModal() {
     }));
 }
 
+function requestPlotResourceModal() {
+    let xhr = new XMLHttpRequest();
+    let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    xhr.onload = function () {
+        if (xhr.status == 200) {
+            let response = xhr.responseText;
+            document.getElementById('resource-modal-content').innerHTML = response;
+
+            if (!$('#plot-resource-modal').hasClass('show')) {
+                $('#plot-resource-modal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+
+                $('#plot-resource-modal').modal('show');
+                return;
+            }
+
+            $('#plot-resource-modal').on('hidden.bs.modal', function (e) {
+                document.getElementById('resource-modal-content').innerHTML = '';
+            });
+        }
+    }
+
+    xhr.open('POST', '/request-plot-resource-modal');
+    xhr.setRequestHeader("X-CSRF-Token", csrf);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({
+        'user_id': userId,
+        'game_id': id,
+    }));
+}
+
 function pickCard(cardIndex, deck) {
     if (currentTurn['id'] != userId) {
         alert("It's not your turn");
@@ -130,9 +164,13 @@ function pickCard(cardIndex, deck) {
         'cardIndex': cardIndex,
         'deck': deck
     }));
+
+    document.getElementById('cardDescription').innerHTML = '';
 };
 
 function skipTurnSequence() {
+    document.getElementById('cardDescription').innerHTML = '';
+
     let xhr = new XMLHttpRequest();
     let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -159,12 +197,12 @@ function changeTurnSequence() {
     switch (turnSequence) {
         case 2:
             document.getElementById('turnSequence').textContent = 'Purchasing of cards';
-            document.getElementById('options').innerHTML = '<button class="btn btn-primary" onclick="skipTurnSequence()">Skip turn sequence</button>';
+            document.getElementById('options').innerHTML = '<button class="btn btn-primary" onclick="skipTurnSequence()">Next turn sequence</button>';
             break;
 
         case 3:
             document.getElementById('turnSequence').textContent = 'Combat';
-            document.getElementById('options').innerHTML = '<button class="btn btn-primary" onclick="skipTurnSequence()">Skip turn sequence</button>';
+            document.getElementById('options').innerHTML = '<button class="btn btn-primary" onclick="skipTurnSequence()">Next turn sequence</button>';
             break;
 
         case 4:
@@ -337,7 +375,19 @@ function checkUseCards() {
             button.classList.add("btn", "btn-primary", "mt-3");
             button.id = 'useButton';
             button.onclick = useSelectedCards;
-            button.textContent = "Use cards";
+            let textContent = '';
+            switch (turnSequence) {
+                case 3:
+                    textContent = 'Use for attack';
+                    break;
+                case 4:
+                    textContent = 'Discard cards';
+                case 6:
+                    textContent = 'Discard cards';
+                default:
+                    break;
+            }
+            button.textContent = textContent;
             document.getElementById('useButtonContainer').appendChild(button);
         }
     } else {
@@ -371,10 +421,108 @@ function useSelectedCards() {
 }
 
 function updateNotes() {
-    document.getElementById('playerNotes').innerHtml = '';
+    document.getElementById('playerNotes').innerHTML = '';
     let html = '';
     for (const note of notes) {
-        html += `<p>${note}</p>`;
+        html = html.concat(`<p>${note}</p>`);
     }
-    document.getElementById('playerNotes').innerHtml = html;
+    document.getElementById('playerNotes').innerHTML = html;
+}
+
+
+function addResourceModal(index, counterId) {
+    let available = +document.getElementById('popAvail' + index).innerText;
+    if (available == 0) {
+        return;
+    }
+
+    available--
+    document.getElementById('popAvail' + index).innerText = available;
+
+    let counter = +document.getElementById(counterId).innerText;
+    counter++;
+    document.getElementById(counterId).innerText = counter;
+    checkAllPopulationDistributed();
+}
+
+function subtractResourceModal(index, counterId) {
+    let available = +document.getElementById('popAvail' + index).innerText;
+    let max = +document.getElementById('popAvailMax' + index).innerText;
+    if (available == max) {
+        return;
+    }
+
+    available++
+    document.getElementById('popAvail' + index).innerText = available;
+
+    let counter = +document.getElementById(counterId).innerText;
+    counter--;
+    document.getElementById(counterId).innerText = counter;
+    checkAllPopulationDistributed();
+}
+
+function checkAllPopulationDistributed() {
+    let counters = document.getElementsByClassName('popCounter');
+    let allUsed = true;
+
+    for (const counter of counters) {
+        let available = +counter.innerText;
+        if (available == 0) {
+            continue;
+        } else {
+            allUsed = false;
+            break;
+        }
+    }
+
+    if (allUsed) {
+        document.getElementById('distButton').disabled = false;
+    } else {
+        document.getElementById('distButton').disabled = true;
+    }
+}
+
+function comfirmDistribution() {
+    let counters = document.getElementsByClassName('popCounter');
+    let allUsed = true;
+
+    for (const counter of counters) {
+        let available = +counter.innerText;
+        if (available == 0) {
+            continue;
+        } else {
+            allUsed = false;
+            break;
+        }
+    }
+
+    if (allUsed) {
+        document.getElementById('cardDescription').innerHTML = '';
+
+        let xhr = new XMLHttpRequest();
+        let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        let food = +document.getElementById('foodCounter').innerText;
+        let commerce = +document.getElementById('commerceCounter').innerText;
+        let production = +document.getElementById('productionCounter').innerText;
+
+        xhr.onload = function () {
+            if (xhr.status == 200) {
+
+                $('#plot-resource-modal').modal("hide");
+            }
+        }
+
+        xhr.open('POST', '/add-resources');
+        xhr.setRequestHeader("X-CSRF-Token", csrf);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({
+            'game_id': id,
+            'resources': {
+                'food': food,
+                'commerce': commerce,
+                'production': production,
+            }
+        }));
+    }
 }

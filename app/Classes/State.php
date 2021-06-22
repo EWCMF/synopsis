@@ -164,7 +164,14 @@ class State implements JsonSerializable
                         if ($this->checkPopulationCount($this->currentTurn['id']) == 0) {
                             $this->turnSequence = 2;
                         } else {
-                            $this->turnSequence = 1;
+                            $hybridPlots = $this->getHybridPlotsForId($this->currentTurn['id']);
+
+                            if (count($hybridPlots) > 0) {
+                                $this->turnSequence = 1;
+                            } else {
+                                $this->turnSequence = 2;
+                            }
+
                         }
                         $this->addResources();
                         return true;
@@ -192,10 +199,12 @@ class State implements JsonSerializable
             if ($player['id'] == $this->currentTurn['id']) {
                 if ($lastPlayer['id'] == $player['id']) {
                     $this->currentTurn = $this->players[0];
+                    $this->currentMessageToLog = $player['name'] . " finished his turn. Current turn is now: " . $this->currentTurn['name'];
                     break;
                 } else {
                     $index = array_search($player, $this->players) + 1;
                     $this->currentTurn = $this->players[$index];
+                    $this->currentMessageToLog = $player['name'] . " finished his turn. Current turn is now: " . $this->currentTurn['name'];
                     break;
                 }
             }
@@ -216,6 +225,7 @@ class State implements JsonSerializable
             case 3:
                 $this->turnSequence = 4;
                 $this->currentMessageToLog = $this->currentTurn['name'] . " did not initiate combat.";
+                $this->drawCards();
                 return true;
             default:
                 return false;
@@ -320,19 +330,19 @@ class State implements JsonSerializable
             switch ($plot['specialEffectId']) {
                 case 1:
                     $currentCommerce = $this->cardsOnHand[$currentId]['resources']['commerce'];
-                    $newCommerce = $currentCommerce + 2;
+                    $newCommerce = $currentCommerce + 2 + $plot['attachedPopulation'];
                     $this->cardsOnHand[$currentId]['resources']['commerce'] = $newCommerce;
                     break;
 
                 case 2:
                     $currentProduction = $this->cardsOnHand[$currentId]['resources']['production'];
-                    $newProduction = $currentProduction + 2;
+                    $newProduction = $currentProduction + 2 + $plot['attachedPopulation'];
                     $this->cardsOnHand[$currentId]['resources']['production'] = $newProduction;
                     break;
 
                 case 3:
                     $currentFood = $this->cardsOnHand[$currentId]['resources']['food'];
-                    $newFood = $currentFood + 2;
+                    $newFood = $currentFood + 2 + $plot['attachedPopulation'];
                     $this->cardsOnHand[$currentId]['resources']['food'] = $newFood;
                     break;
 
@@ -401,6 +411,54 @@ class State implements JsonSerializable
         $price = $this->cardsOnHand[$playerId]['plots'][$cardIndex]['attachedPopulation'] * 2 + $base;
 
         return $food >= $price;
+    }
+
+    public function getHybridPlotsForId($playerId) {
+        $plots = $this->cardsOnHand[$playerId]['plots'];
+
+        $hybridPlots = array();
+        foreach ($plots as $plot) {
+            if ($plot['attachedPopulation'] == 0) {
+                continue;
+            }
+            if ($plot['specialEffectId'] == 4 ||
+                $plot['specialEffectId'] == 5 ||
+                $plot['specialEffectId'] == 6
+            ) {
+                array_push($hybridPlots, $plot);
+            }
+        }
+
+        return $hybridPlots;
+    }
+
+    public function addResourceDistribution($playerId, $resources) {
+        if ($playerId != $this->currentTurn['id']) {
+            return false;
+        }
+
+        $food = $resources['food'];
+        $commerce = $resources['commerce'];
+        $production = $resources['production'];
+
+        $hybridPlots = $this->getHybridPlotsForId($playerId);
+        $populations = 0;
+        foreach ($hybridPlots as $hybridPlots) {
+            $populations += $hybridPlots['attachedPopulation'];
+        }
+
+        $sum = $food + $commerce + $production;
+        if ($sum != $populations || $populations == 0) {
+            return false;
+        }
+
+        $this->cardsOnHand[$playerId]['resources']['food'] += $food;
+        $this->cardsOnHand[$playerId]['resources']['commerce'] += $commerce;
+        $this->cardsOnHand[$playerId]['resources']['production'] += $production;
+
+        $this->turnSequence = 2;
+        $this->currentMessageToLog = $this->currentTurn['name'] . " has distributed all resources";
+        return true;
     }
 
     public function newState()
