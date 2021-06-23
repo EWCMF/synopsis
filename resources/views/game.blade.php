@@ -151,10 +151,17 @@
             <div class="modal-content light-grey" id="plot-purchase-modal-content"></div>
         </div>
     </div>
+    <div id="building-purchase-modal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content light-grey" id="building-purchase-modal-content"></div>
+        </div>
+    </div>
 
 
 
     <script src="{{ asset('js/game.js') }}"></script>
+    <script src="{{ asset('js/game-modal.js')}}"></script>
+    <script src="{{ asset('js/game-xhr.js')}}"></script>
     <script defer>
         const Echo = window.Echo;
         const id = "{{ $id }}";

@@ -28,7 +28,7 @@ class State implements JsonSerializable
     private $attacking = array();
     private $defending = array();
 
-    private int $winnerId;
+    private $winner;
 
     private int $maxHappinessPlayerId;
     private int $maxCulturePlayerId;
@@ -116,6 +116,17 @@ class State implements JsonSerializable
 
                 return true;
 
+            case 'purchaseableTech':
+                if ($this->turnSequence == 2) {
+                    $success = $this->purchaseTech($userId, $cardIndex);
+                    if ($success) {
+                        $this->currentMessageToLog = $this->currentTurn['name'] . ' has purchased technology and gained victory point';
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
             case 'ownPlots':
                 if ($this->turnSequence == 2) {
                     if ($this->checkCanPurchasePopulation($userId, $cardIndex)) {
@@ -190,6 +201,14 @@ class State implements JsonSerializable
                         return true;
                     }
                 }
+            case 'building':
+                $success = $this->purchaseBuilding($userId, $cardIndex, $option);
+                if ($success) {
+                    $this->currentMessageToLog = $this->currentTurn['name'] . ' has purchased a building for a plot';
+                    return true;
+                } else {
+                    return false;
+                }
         }
 
         return false;
@@ -202,15 +221,6 @@ class State implements JsonSerializable
         }
 
         switch ($deck) {
-            case 'purchaseablePlots':
-                // $card = array_splice($this->purchaseablePlots, $cardIndex, 1);
-                // array_push($this->cardsOnHand[$userId]['plots'], $card[0]);
-                // if ($this->turnSequence == 5) {
-                //     $this->checkStartingPlots();
-                // } else {
-                //     $this->currentMessageToLog = '';
-                // }
-                // return true;
             case 'playDeck':
                 switch ($this->turnSequence) {
                     case 1:
@@ -468,7 +478,54 @@ class State implements JsonSerializable
         }
     }
 
-    public function purchasePlot($playerId, $cardIndex, $resourceDistribution) {
+    public function purchaseTech($playerId, $cardIndex)
+    {
+        $commerceAvailable = $this->cardsOnHand[$playerId]['resources']['commerce'];
+        $cost = $this->purchaseableTechs[$cardIndex]['cost'];
+        $modifier = 0;
+
+        if ($commerceAvailable >= ($cost + $modifier)) {
+            $card = array_splice($this->purchaseableTechs, $cardIndex, 1);
+            array_push($this->cardsOnHand[$playerId]['techs'], $card[0]);
+            array_push(
+                $this->purchaseableTechs,
+                array_pop($this->techDeck),
+            );
+        }
+    }
+
+    public function purchaseBuilding($playerId, $cardIndex, $plotId)
+    {
+        $production = $this->cardsOnHand[$playerId]['resources']['production'];
+        $cost = $this->cardsOnHand[$playerId]['hand'][$cardIndex]['cost'];
+        $modifier = 0;
+
+        if ($production < $cost + $modifier) {
+            return false;
+        }
+
+        $population = $this->cardsOnHand[$playerId]['plots'][$plotId]['attachedPopulation'];
+        $buildings = count($this->cardsOnHand[$playerId]['plots'][$plotId]['attachedBuildings']);
+
+        $allowed = false;
+        if ($population >= 1 && $buildings == 0) {
+            $allowed = true;
+        } else if ($population >= 3 && $buildings == 1) {
+            $allowed = true;
+        }
+
+        if ($allowed) {
+            array_push($this->cardsOnHand[$playerId]['plots'][$plotId]['attachedBuildings'], $this->cardsOnHand[$playerId]['hand'][$cardIndex]);
+            unset($this->cardsOnHand[$playerId]['hand'][$cardIndex]);
+            $this->cardsOnHand[$playerId]['hand'] = array_values($this->cardsOnHand[$playerId]['hand']);
+            return true;
+        }
+
+        return false;
+    }
+
+    public function purchasePlot($playerId, $cardIndex, $resourceDistribution)
+    {
         if ($playerId != $this->currentTurn['id']) {
             return false;
         }
@@ -502,7 +559,8 @@ class State implements JsonSerializable
         return true;
     }
 
-    public function getNeededResourcesForPlotForUser($playerId) {
+    public function getNeededResourcesForPlotForUser($playerId)
+    {
         $plots = count($this->cardsOnHand[$playerId]['plots']);
         return $plots * 5 - 5;
     }
@@ -581,6 +639,79 @@ class State implements JsonSerializable
         $this->turnSequence = 2;
         $this->currentMessageToLog = $this->currentTurn['name'] . " has distributed all resources";
         return true;
+    }
+
+    public function getPlotsOpenForBuildingsForUser($playerId)
+    {
+        $plots = $this->cardsOnHand[$playerId]['plots'];
+        $allowedPlots = array();
+
+        foreach ($plots as $plotKey => $plotValue) {
+            $population = $plotValue['attachedPopulation'];
+            $buildings = $plotValue['attachedBuildings'];
+            if ($population >= 1 && count($buildings) == 0) {
+                $allowedPlots[$plotKey] = $plotValue;
+                continue;
+            } else if ($population >= 3 && count($buildings) == 1) {
+                $allowedPlots[$plotKey] = $plotValue;
+            }
+        }
+
+        return $allowedPlots;
+    }
+
+    public function updateSpecialResources() {
+        foreach ($this->cardsOnHand as $playerId => $cards) {
+            $happiness = 0;
+            $culture = 0;
+            $victoryPoints = 0;
+
+            foreach ($cards['plots'] as $plot) {
+                $victoryPoints += $plot['attachedPopulation'];
+
+                foreach ($plot['attachedBuildings'] as $building) {
+                    if ($building['type'] == 'Wonder') {
+                        $victoryPoints++;
+                    }
+                }
+            }
+
+            foreach ($cards['techs'] as $tech) {
+                # code...
+            }
+
+            $victoryPoints += count($cards['techs']);
+
+            $this->cardsOnHand[$playerId]['resources']['victoryPoints'] = $victoryPoints;
+            $this->cardsOnHand[$playerId]['resources']['happiness'] = $happiness;
+            $this->cardsOnHand[$playerId]['resources']['culture'] = $culture;
+        }
+    }
+
+    public function checkVictory() {
+        if (empty($this->techDeck)) {
+            $playerVictoryPoints = array();
+            foreach ($this->cardsOnHand as $playerId => $cards) {
+                $playerVictoryPoints[$playerId] = $cards['resources']['victoryPoints'];
+            }
+
+            arsort($playerVictoryPoints);
+
+            $winnerKey = key($playerVictoryPoints[0]);
+            foreach ($this->players as $player) {
+                if ($winnerKey == $player['id']) {
+                    $this->winner = $player;
+                    break;
+                }
+            }
+
+            $this->currentTurn = -1;
+            $this->turnSequence = -1;
+
+            return true;
+        }
+
+        return false;
     }
 
     public function newState()

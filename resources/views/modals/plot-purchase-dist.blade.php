@@ -59,7 +59,7 @@
 
                 <div class="row">
                     <button class="btn btn-primary mt-3 mr-3" data-dismiss="modal">Cancel</button>
-                    <button id="plotDistButton" class="btn btn-primary mt-3" onclick="comfirmPlotPurchase()" disabled>Confirm</button>
+                    <button id="plotDistButton" class="btn btn-primary mt-3" onclick="confirmPlotPurchase()" disabled>Confirm</button>
                 </div>
 
             </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Classes\State;
+use App\Events\GameFinished;
 use App\Events\GameStarted;
 use App\Events\NewMove;
 use App\Events\PlayerJoined;
@@ -190,6 +191,7 @@ class GameController extends Controller
         $state = new State($game->state);
 
         if ($state->purchasePlot($userId, $cardIndex, $resources)) {
+            $state->updateSpecialResources();
 
             $game->state = json_encode($state);
             $game->save();
@@ -219,9 +221,15 @@ class GameController extends Controller
         $state = new State($game->state);
 
         if ($state->pickCard($cardIndex, $deck, $userId, $option)) {
+            $state->updateSpecialResources();
 
             $game->state = json_encode($state);
             $game->save();
+
+            if ($state->checkVictory()) {
+                broadcast(new GameFinished($gameId, $state));
+                return response()->noContent(200);
+            }
 
             broadcast(new NewMove($gameId, $state));
             foreach ($state->getPlayers() as $player) {
@@ -246,6 +254,7 @@ class GameController extends Controller
         $state = new State($game->state);
 
         if ($state->pickCards($cardIndexes, $deck, $userId)) {
+            $state->updateSpecialResources();
 
             $game->state = json_encode($state);
             $game->save();
@@ -427,6 +436,32 @@ class GameController extends Controller
         ];
 
         return view('modals.plot-purchase-dist', $viewProperties);
+    }
+
+    public function requestBuildingPurchaseModal(Request $request)
+    {
+        $userId = Auth::id();
+        $gameId = $request->input('game_id');
+        $plotCardIndex = $request->input('cardIndex');
+
+        $allowed = DB::table('game_user')->where([
+            'user_id' => $userId,
+            'game_id' => $gameId,
+        ])->exists();
+
+        if (!$allowed) {
+            return response('Not authorized', 403);
+        }
+
+        $state = new State(Game::find($gameId)->state);
+        $allowedPlots = $state->getPlotsOpenForBuildingsForUser($userId);
+
+        $viewProperties = [
+            'allowedPlots' => $allowedPlots,
+            'BuildingIndex' => $plotCardIndex,
+        ];
+
+        return view('modals.plot-available', $viewProperties);
     }
 
 
