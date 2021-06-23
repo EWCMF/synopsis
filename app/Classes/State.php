@@ -11,6 +11,7 @@ class State implements JsonSerializable
     private $ownerId;
 
     private $players = array();
+    private $cpu = null;
 
     private $playDeck = array();
     private $techDeck = array();
@@ -46,6 +47,10 @@ class State implements JsonSerializable
 
     public function addPlayer($playerId, $playerName)
     {
+        if ($playerId == 'CPU') {
+            $this->cpu = new ComputerPlayer(rand(1, 5), rand(1, 5));
+        }
+
         $player = [
             'id' => $playerId,
             'name' => $playerName,

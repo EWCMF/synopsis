@@ -51,10 +51,7 @@
                     <div class="d-flex flex-column">
                         <h2 class="text-light">Choose game type</h2>
                         <button class="btn btn-primary" onclick="startNewGame(1)">1 vs 1 game</button>
-                        <button disabled class="btn btn-primary">1 vs 1 game (vs CPU)</button>
-                        <button disabled class="btn btn-primary">3 player game</button>
-                        <button disabled class="btn btn-primary">4 player game</button>
-                        <button disabled class="btn btn-primary">2 vs 2 team game</button>
+                        <button class="btn btn-primary" onclick="startNewGame(2)">1 vs 1 game (vs CPU)</button>
                     </div>
                 </div>
             </div>

@@ -522,6 +522,22 @@ class GameController extends Controller
         );
     }
 
+    public function cpuMove(Request $request) {
+        $userId = Auth::id();
+        $gameId = $request->input('game_id');
+
+        $allowed = DB::table('game_user')->where([
+            'user_id' => $userId,
+            'game_id' => $gameId,
+        ])->exists();
+
+        if (!$allowed) {
+            return response('Not authorized', 403);
+        }
+
+        $state = new State(Game::find($gameId)->state);
+    }
+
     public function debug() {
         $userId = Auth::id();
         $gameId = 15;

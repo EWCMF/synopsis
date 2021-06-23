@@ -36,6 +36,7 @@ Route::post('/request-plot-modal', [GameController::class, 'requestPlotModal']);
 Route::post('/request-plot-resource-modal', [GameController::class, 'requestPlotResourceModal']);
 Route::post('/request-plot-purchase-modal', [GameController::class, 'requestPlotPurchaseModal']);
 Route::post('/request-building-purchase-modal', [GameController::class, 'requestBuildingPurchaseModal']);
+Route::post('/cpu-move', [GameController::class, 'cpuMove']);
 Route::post('/add-resources', [GameController::class, 'addResources']);
 Route::post('/purchase-plot', [GameController::class, 'plotPurchase']);
 Route::get('/debug-state/{id}', [HomeController::class, 'debugState']);

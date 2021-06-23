@@ -245,7 +245,7 @@
                 changeCurrentTurn();
                 requestPlotModal();
             })
-            .listen('NewMove', (data) => {
+            .listen('NewMove', async (data) => {
                 addToLog(data.log);
                 requestCurrentGameView();
                 checkMove();
@@ -253,6 +253,10 @@
                 turnSequence = +data.turnSequence;
                 changeCurrentTurn();
                 changeTurnSequence();
+                if (currentTurn['id'] == 'CPU') {
+                    await sleep(1000 * 5);
+                    
+                }
             });
 
         Echo.private(`user.${userId}`)

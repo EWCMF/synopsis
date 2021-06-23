@@ -46,6 +46,10 @@ class HomeController extends Controller
             case 1:
                 $game->max_players = 2;
                 break;
+            case 2:
+                $game->max_players = 1;
+                $state->addPlayer('CPU', 'CPU player');
+                break;
             default:
                 # code...
                 break;
