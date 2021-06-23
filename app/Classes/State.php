@@ -102,8 +102,26 @@ class State implements JsonSerializable
         ];
     }
 
+    public function cpuMove() {
+        $cpuHand = $this->cardsOnHand['CPU'];
+        $playerHand = null;
+        foreach ($this->cardsOnHand as $playerId => $cards) {
+            if ($playerId != 'CPU') {
+                $playerHand = $this->cardsOnHand[$playerId];
+            }
+        }
 
-    public function pickCard($cardIndex, $deck, $userId, $option)
+        if (isset($this->cpu)) {
+            $this->cpu = new ComputerPlayer(0, 0, json_encode($this->cpu));
+            $this->cpu->setOwnHand($cpuHand);
+            $this->cpu->setFoeHand($playerHand);
+
+            return $this->cpu->evaluateMove($this);
+        }
+    }
+
+
+    public function pickCard($cardIndex, $deck, $userId, $option = -1)
     {
         if ($userId != $this->currentTurn['id']) {
             return false;
@@ -913,5 +931,10 @@ class State implements JsonSerializable
     public function getPlayerNotes()
     {
         return $this->playerNotes;
+    }
+
+    public function getCpu()
+    {
+        return $this->cpu;
     }
 }

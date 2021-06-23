@@ -40,8 +40,6 @@ class HomeController extends Controller
         $state->addPlayer($user->id, $user->name);
         $state->setOwnerId($user->id);
 
-        $game->state = json_encode($state);
-
         switch ($type) {
             case 1:
                 $game->max_players = 2;
@@ -54,6 +52,8 @@ class HomeController extends Controller
                 # code...
                 break;
         }
+
+        $game->state = json_encode($state);
         $game->save();
         $game->users()->save($user);
         return redirect('game/'.$game->id);

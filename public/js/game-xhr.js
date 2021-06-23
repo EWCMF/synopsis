@@ -21,7 +21,7 @@ function requestPlotModal() {
     let xhr = new XMLHttpRequest();
     let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    xhr.onload = function () {
+    xhr.onload = async function () {
         if (xhr.status == 200) {
             let response = xhr.responseText;
             document.getElementById('modal-content').innerHTML = response;
@@ -46,6 +46,19 @@ function requestPlotModal() {
                 })
 
                 $("#plot-modal").modal("hide");
+            }
+
+            if (maxPlayers == 1) {
+                if (currentTurn['id'] == 'CPU') {
+
+
+                    if (!cpuDebug) {
+                        await sleep(1000 * 5);
+                        requestCpuMove();
+                    }
+
+
+                }
             }
         }
     }

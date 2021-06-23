@@ -39,7 +39,6 @@ class GameController extends Controller
 
         $state = new State($game->state);
 
-
         $viewProperties = [
             'id' => $id,
             'players' => $state->getPlayers(),
@@ -60,6 +59,17 @@ class GameController extends Controller
         $cardsInHand = $state->getCardsInHand();
         $playerNotes = $state->getPlayerNotes();
         switch ($game->max_players) {
+            case 1:
+                foreach (array_keys($cardsInHand) as $key) {
+                    if ($key == $user->id) {
+                        $viewProperties['ownHand'] = $cardsInHand[$key];
+                        $viewProperties['notes'] = $playerNotes[$key];
+                    } else {
+                        $viewProperties['foeHand'] = $cardsInHand[$key];
+                    }
+                }
+
+                return view('game', $viewProperties);
             case 2:
                 foreach (array_keys($cardsInHand) as $key) {
                     if ($key == $user->id) {
@@ -71,8 +81,6 @@ class GameController extends Controller
                 }
 
                 return view('game', $viewProperties);
-                break;
-
             case 3:
 
 
@@ -536,11 +544,12 @@ class GameController extends Controller
         }
 
         $state = new State(Game::find($gameId)->state);
+        $state->cpuMove();
     }
 
     public function debug() {
         $userId = Auth::id();
-        $gameId = 15;
+        $gameId = 23;
 
         $allowed = DB::table('game_user')->where([
             'user_id' => $userId,
@@ -552,15 +561,10 @@ class GameController extends Controller
         }
 
         $state = new State(Game::find($gameId)->state);
-        $resourcesAvailable = $state->getCardsInHandForUser($userId)['resources'];
-        $needed = $state->getNeededResourcesForPlotForUser($userId);
+        $state->cpuMove();
+        dd($state);
 
-        $viewProperties = [
-            'resources' => $resourcesAvailable,
-            'needed' => $needed,
-        ];
-
-        return view('modals.plot-purchase-dist', $viewProperties);
+        return 'debug';
 
     }
 }

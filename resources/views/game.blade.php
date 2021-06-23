@@ -163,6 +163,7 @@
     <script src="{{ asset('js/game-modal.js')}}"></script>
     <script src="{{ asset('js/game-xhr.js')}}"></script>
     <script defer>
+        const cpuDebug = true;
         const Echo = window.Echo;
         const id = "{{ $id }}";
         let started = @json($started);
@@ -194,14 +195,23 @@
 
         Echo.join(`game.${id}`)
             .here((users) => {
-                this.users = users;
-                usersCount = users.length;
-                updateOnline(this.users);
-                for (const user of users) {
+                if (maxPlayers == 2) {
+                    this.users = users;
+                    usersCount = users.length;
+                    updateOnline(this.users);
+                    for (const user of users) {
                     updatePlayerStatusInDB(user.id, true);
+                    }
+                } else {
+                    updatePlayers(players);
                 }
+
                 if (!started) {
-                    checkCanStart(usersCount);
+                    if (maxPlayers == 1) {
+                        startGame(true);
+                    } else {
+                        checkCanStart(usersCount);
+                    }
                 } else {
                     requestCurrentGameView();
                     if (turnSequence == 5) {
@@ -254,8 +264,11 @@
                 changeCurrentTurn();
                 changeTurnSequence();
                 if (currentTurn['id'] == 'CPU') {
-                    await sleep(1000 * 5);
-                    
+                    if (!cpuDebug) {
+                        await sleep(1000 * 5);
+                        requestCpuMove();
+                    }
+
                 }
             });
 

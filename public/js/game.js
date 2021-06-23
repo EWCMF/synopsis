@@ -29,10 +29,14 @@ function checkMove() {
     }
 }
 
-async function startGame() {
-    addToLog('Last player joined. Game starts in 10 seconds.');
+async function startGame(withCpu = false) {
+    if (withCpu) {
+        addToLog('Game starts in 10 seconds.');
+    } else {
+        addToLog('Last player joined. Game starts in 10 seconds.');
+    }
     await sleep(1000 * 10);
-    if (usersCount != maxPlayers) {
+    if (usersCount != maxPlayers && !withCpu) {
         addToLog('Game start cancelled. Player left the game.');
         return;
     }
