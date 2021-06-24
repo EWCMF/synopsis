@@ -38,7 +38,7 @@
                         <p class="ml-3">No buildings</p>
                         @else
                             @foreach ($foePlot['attachedBuildings'] as $building)
-                            <p class="mb-0 ml-3" onclick='showCard(this, JSON.parse(`@json($building)`), false)'><a class="text-light">{{ $foePlot['name'] }}</a></p>
+                            <p class="mb-0 ml-3" onclick='showCard(this, JSON.parse(`@json($building)`), false, true)'><a class="text-light">{{ $building['name'] }}</a></p>
                             @endforeach
                         @endif
                         </div>
@@ -111,9 +111,16 @@
                             Attacking
                         </h5>
                         <div id="attacking">
-                            @foreach ($attacking as $attacker)
+                            @isset($attacking['index'])
+                            <p>Attacker: {{$players[$attacking['index']]['name']}}</p>
+                            @endisset
 
+                            @isset($attacking['units'])
+                            @foreach ($attacking['units'] as $attacker)
+                            <p class="mb-0 ml-3" onclick='showCard(this, JSON.parse(`@json($attacker)`), false)'><a class="text-light">{{ $attacker['name'] }}</a></p>
                             @endforeach
+                            @endisset
+
                         </div>
                     </div>
                     <div class="col-6">
@@ -121,9 +128,16 @@
                             Defending
                         </h5>
                         <div id="defending">
-                            @foreach ($defending as $defender)
+                            @isset($defending['index'])
+                            <p>Defender: {{$players[$defending['index']]['name']}}</p>
+                            @endisset
 
+                            @isset($defending['units'])
+                            @foreach ($defending['units'] as $defender)
+                            <p class="mb-0 ml-3" onclick='showCard(this, JSON.parse(`@json($defender)`), false)'><a class="text-light">{{ $defender['name'] }}</a></p>
                             @endforeach
+                            @endisset
+
                         </div>
                     </div>
                 </div>
@@ -166,7 +180,7 @@
                         <p class="ml-3">No buildings</p>
                     @else
                         @foreach ($ownPlot['attachedBuildings'] as $building)
-                        <p class="mb-0 ml-3" onclick='showCard(this, JSON.parse(`@json($building)`), false)' data-index="{{ $loop->index }}" data-deck="attachedBuildings"><a class="text-light">{{ $foePlot['name'] }}</a></p>
+                        <p class="mb-0 ml-3" onclick='showCard(this, JSON.parse(`@json($building)`), false, true)' data-index="{{ $loop->index }}" data-deck="attachedBuildings"><a class="text-light">{{ $building['name'] }}</a></p>
                         @endforeach
                     @endif
                     </div>

@@ -450,7 +450,7 @@ class GameController extends Controller
     {
         $userId = Auth::id();
         $gameId = $request->input('game_id');
-        $plotCardIndex = $request->input('cardIndex');
+        $buildingIndex = $request->input('cardIndex');
 
         $allowed = DB::table('game_user')->where([
             'user_id' => $userId,
@@ -466,7 +466,7 @@ class GameController extends Controller
 
         $viewProperties = [
             'allowedPlots' => $allowedPlots,
-            'BuildingIndex' => $plotCardIndex,
+            'buildingIndex' => $buildingIndex,
         ];
 
         return view('modals.plot-available', $viewProperties);
@@ -549,7 +549,8 @@ class GameController extends Controller
 
     public function debug() {
         $userId = Auth::id();
-        $gameId = 23;
+        $gameId = 26;
+        $buildingIndex = 0;
 
         $allowed = DB::table('game_user')->where([
             'user_id' => $userId,
@@ -561,10 +562,9 @@ class GameController extends Controller
         }
 
         $state = new State(Game::find($gameId)->state);
-        $state->cpuMove();
         dd($state);
 
-        return 'debug';
+        return "test";
 
     }
 }

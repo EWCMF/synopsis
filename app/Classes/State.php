@@ -102,7 +102,8 @@ class State implements JsonSerializable
         ];
     }
 
-    public function cpuMove() {
+    public function cpuMove()
+    {
         $cpuHand = $this->cardsOnHand['CPU'];
         $playerHand = null;
         foreach ($this->cardsOnHand as $playerId => $cards) {
@@ -152,8 +153,7 @@ class State implements JsonSerializable
 
             case 'ownPlots':
                 if ($this->turnSequence == 2) {
-                    if ($this->checkCanPurchasePopulation($userId, $cardIndex)) {
-                        $this->cardsOnHand[$userId]['plots'][$cardIndex]['attachedPopulation']++;
+                    if ($this->purchasePopulation($userId, $cardIndex)) {
                         $this->currentMessageToLog = $this->currentTurn['name'] . ' purchased population for ' . $this->cardsOnHand[$userId]['plots'][$cardIndex]['name'];
                         return true;
                     }
@@ -253,7 +253,27 @@ class State implements JsonSerializable
                         break;
 
                     case 3:
-                        break;
+                        $this->attacking['units'] = array();
+                        $attackingIndex = 0;
+                        foreach ($this->players as $key => $player) {
+                            if ($player['id'] == $userId) {
+                                $attackingIndex = $key;
+                                break;
+                            }
+                        }
+                        $this->attacking['index'] = $attackingIndex;
+
+                        foreach ($cardIndexes as $cardIndex) {
+                            array_push($this->attacking['units'], $this->cardsOnHand[$userId]['hand'][$cardIndex]);
+                            unset($this->cardsOnHand[$userId]['hand'][$cardIndex]);
+                        }
+                        $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
+
+                        $this->currentMessageToLog = $this->players[$attackingIndex]['name'] . " has launched an attack.";
+
+                        $this->turnSequence = 7;
+                        $this->changePlayer(false);
+                        return true;
 
                     case 4:
                         foreach ($cardIndexes as $cardIndex) {
@@ -284,6 +304,25 @@ class State implements JsonSerializable
                         $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
                         $this->checkStartingDiscards();
                         return true;
+                    case 7:
+                        $this->defending['units'] = array();
+                        $defendingIndex = 0;
+                        foreach ($this->players as $key => $player) {
+                            if ($player['id'] == $userId) {
+                                $defendingIndex = $key;
+                                break;
+                            }
+                        }
+                        $this->defending['index'] = $defendingIndex;
+
+                        foreach ($cardIndexes as $cardIndex) {
+                            array_push($this->defending, $this->cardsOnHand[$userId]['hand'][$cardIndex]);
+                            unset($this->cardsOnHand[$userId]['hand'][$cardIndex]);
+                        }
+                        $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
+                        $this->resolveAttack();
+                        $this->drawCards();
+                        return true;
                     default:
                         # code...
                         break;
@@ -293,19 +332,24 @@ class State implements JsonSerializable
         }
     }
 
-    public function changePlayer()
+    public function changePlayer($logPlayerChange = true)
     {
         $lastPlayer = end($this->players);
         foreach ($this->players as $player) {
             if ($player['id'] == $this->currentTurn['id']) {
                 if ($lastPlayer['id'] == $player['id']) {
                     $this->currentTurn = $this->players[0];
-                    $this->currentMessageToLog = $player['name'] . " finished his turn. Current turn is now: " . $this->currentTurn['name'];
+                    if ($logPlayerChange) {
+                        $this->currentMessageToLog = $player['name'] . " finished his turn. Current turn is now: " . $this->currentTurn['name'];
+                    }
+
                     break;
                 } else {
                     $index = array_search($player, $this->players) + 1;
                     $this->currentTurn = $this->players[$index];
-                    $this->currentMessageToLog = $player['name'] . " finished his turn. Current turn is now: " . $this->currentTurn['name'];
+                    if ($logPlayerChange) {
+                        $this->currentMessageToLog = $player['name'] . " finished his turn. Current turn is now: " . $this->currentTurn['name'];
+                    }
                     break;
                 }
             }
@@ -327,6 +371,20 @@ class State implements JsonSerializable
             case 3:
                 $this->turnSequence = 4;
                 $this->currentMessageToLog = $this->currentTurn['name'] . " did not initiate combat.";
+                $this->drawCards();
+                return true;
+            case 7:
+                $this->defending['units'] = array();
+                $defendingIndex = 0;
+                foreach ($this->players as $key => $player) {
+                    if ($player['id'] == $userId) {
+                        $defendingIndex = $key;
+                        break;
+                    }
+                }
+                $this->defending['index'] = $defendingIndex;
+
+                $this->resolveAttack();
                 $this->drawCards();
                 return true;
             default:
@@ -499,6 +557,12 @@ class State implements JsonSerializable
         if (!$this->cardsOnHand[$playerId]['freePopUsed']) {
             array_push($this->playerNotes[$playerId], "One free population available for any plot.");
         }
+
+        if ($this->turnSequence == 7) {
+            if ($this->players[$this->attacking['index']]['id'] != $playerId) {
+                array_push($this->playerNotes[$playerId], "Player is launching attack against you. Choose units to defend");
+            }
+        }
     }
 
     public function purchaseTech($playerId, $cardIndex)
@@ -597,12 +661,14 @@ class State implements JsonSerializable
         return $populationCount;
     }
 
-    public function checkCanPurchasePopulation($playerId, $cardIndex)
-    {
+    public function purchasePopulation($playerId, $cardIndex) {
+        $allowed = false;
+        $canUseFreePop = false;
+
         if (!$this->cardsOnHand[$playerId]['freePopUsed']) {
             $this->cardsOnHand[$playerId]['freePopUsed'] = true;
             $this->updateNotes($playerId);
-            return true;
+            $canUseFreePop = true;
         }
 
         $food = $this->cardsOnHand[$playerId]['resources']['food'];
@@ -610,7 +676,15 @@ class State implements JsonSerializable
         $base = 6;
         $price = $this->cardsOnHand[$playerId]['plots'][$cardIndex]['attachedPopulation'] * 2 + $base;
 
-        return $food >= $price;
+        $allowed = $food >= $price;
+
+        if ($allowed || $canUseFreePop) {
+            $this->cardsOnHand[$playerId]['plots'][$cardIndex]['attachedPopulation']++;
+            $this->cardsOnHand[$playerId]['resources']['food'] -= $price;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function getHybridPlotsForId($playerId)
@@ -683,7 +757,8 @@ class State implements JsonSerializable
         return $allowedPlots;
     }
 
-    public function updateSpecialResources() {
+    public function updateSpecialResources()
+    {
         foreach ($this->cardsOnHand as $playerId => $cards) {
             $happiness = 0;
             $culture = 0;
@@ -711,7 +786,50 @@ class State implements JsonSerializable
         }
     }
 
-    public function checkVictory() {
+    public function resolveAttack()
+    {
+        $attackerId = $this->attacking['index'];
+        $defenderId = $this->defending['index'];
+
+        foreach ($this->attacking['units'] as $attackingUnit) {
+            $attackerSpecialEffectId = $attackingUnit['specialEffectId'];
+            $stoppingBlock = null;
+            foreach ($this->defending['units'] as $defendingUnit) {
+                $defendingSpecialEffectId = $defendingUnit['specialEffectId'];
+
+                switch ($attackerSpecialEffectId) {
+                    case 1:
+                        if ($defendingSpecialEffectId == 1) {
+                            $stoppingBlock = $defendingUnit;
+                        }
+                        break;
+
+                    default:
+                        $stoppingBlock = $defendingUnit;
+                        array_push($this->discardPile, $defendingUnit);
+                        break;
+                }
+            }
+
+            array_push($this->discardPile, $attackingUnit);
+
+            if (isset($stoppingBlock)) {
+                continue;
+            }
+
+            //Attack effect here
+        }
+
+        $this->attacking = array();
+        $this->defending = array();
+
+        $this->changePlayer(false);
+        $this->turnSequence = 4;
+        $this->currentMessageToLog = 'Attack has been resolved';
+    }
+
+    public function checkVictory()
+    {
         if (empty($this->techDeck)) {
             $playerVictoryPoints = array();
             foreach ($this->cardsOnHand as $playerId => $cards) {

@@ -91,6 +91,11 @@ function changeTurnSequence() {
 
         case 6:
             document.getElementById('turnSequence').textContent = 'Discard 2 cards';
+            document.getElementById('options').innerHTML = '<button class="btn btn-primary" onclick="skipTurnSequence()">Don\'t defend</button>';
+            break;
+
+        case 7:
+            document.getElementById('turnSequence').textContent = 'Defend against attack';
             document.getElementById('options').innerHTML = '';
             break;
 
@@ -129,7 +134,7 @@ function addToLog(message) {
     log.innerHTML += "<p class='mb-0'>" + message + "</p>";
 }
 
-function showCard(html, card, selectable) {
+function showCard(html, card, selectable, showOnly = false) {
     let newHtml;
     switch (card.type) {
         case "Building":
@@ -184,7 +189,7 @@ function showCard(html, card, selectable) {
             }
 
             return;
-        } else if (turnSequence == 3) {
+        } else if (turnSequence == 3 || turnSequence == 7) {
             if (card.type == 'Unit') {
                 if (document.getElementById('selectedCards').contains(html)) {
                     document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="removeFromSelected('${html.id}')">Remove from selected</button>`
@@ -197,6 +202,10 @@ function showCard(html, card, selectable) {
         }
     }
 
+    if (showOnly == true) {
+        return;
+    }
+
     switch (turnSequence) {
         case 2:
             if (card.type == 'Plot') {
@@ -204,7 +213,7 @@ function showCard(html, card, selectable) {
                     document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="purchasePlot('${html.dataset.index}')">Purchase plot for ${checkPlotPrice()}</button>`
                 } else if (html.dataset.deck == 'ownPlots') {
                     let price = checkPopulationPrice(html.dataset.index);
-                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="pickCard('${html.dataset.index}', '${html.dataset.deck}')">Purchase population for ${price}</button>`
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="purchasePopulation('${html.dataset.index}', '${html.dataset.deck}')">Purchase population for ${price} food</button>`
                 }
             } else if (card.type == 'Bonus resource') {
                 if (card.specialEffectId == 7 || card.specialEffectId == 8) {
@@ -263,6 +272,23 @@ function purchaseBuilding(index) {
     requestBuildingPurchaseModal(index);
 }
 
+function purchasePopulation(index, deck) {
+    if (currentTurn['id'] != userId) {
+        return;
+    }
+
+    let food = +ownHand['resources']['food'];
+    let needed = checkPopulationPrice(index);
+    let modifier = 0;
+
+    if (food < needed + modifier) {
+        alert("You lack enough food");
+        return;
+    }
+
+    pickCard(index, deck);
+}
+
 function checkPopulationPrice(cardIndex) {
     if (!ownHand.freePopUsed) {
         return 'free';
@@ -298,14 +324,19 @@ function checkUseCards() {
             button.id = 'useButton';
             button.onclick = useSelectedCards;
             let textContent = '';
+            console.log(turnSequence);
             switch (turnSequence) {
                 case 3:
                     textContent = 'Use for attack';
                     break;
                 case 4:
                     textContent = 'Discard cards';
+                    break;
                 case 6:
                     textContent = 'Discard cards';
+                    break;
+                case 7:
+                    textContent = 'Use for defense';
                 default:
                     break;
             }

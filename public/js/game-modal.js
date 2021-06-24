@@ -5,7 +5,7 @@ function confirmBuildingOnPlot(plotIndex, buildingIndex) {
     xhr.onload = function () {
         if (xhr.status == 200) {
 
-            $('#plot-purchase-modal').modal("hide");
+            $('#building-purchase-modal').modal("hide");
         }
     }
 

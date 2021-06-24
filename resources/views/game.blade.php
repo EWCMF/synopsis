@@ -56,6 +56,9 @@
                                             @case(6)
                                                 <p id="turnSequence">Discard 2 cards</p>
                                             @break
+                                            @case(7)
+                                                <p id="turnSequence">Defend against attack</p>
+                                            @break
                                             @default
                                                 <p id="turnSequence"></p>
                                         @endswitch
@@ -75,14 +78,15 @@
 
                                     @else
                                         @switch($turnSequence)
-                                            @case('2')
-                                                <button class="btn btn-primary" onclick="skipTurnSequence()">Skip turn sequence</button>
+                                            @case(2)
+                                                <button class="btn btn-primary" onclick="skipTurnSequence()">Next turn sequence</button>
                                             @break
-                                            @case('3')
-                                                <button class="btn btn-primary" onclick="skipTurnSequence()">Skip turn sequence</button>
+                                            @case(3)
+                                                <button class="btn btn-primary" onclick="skipTurnSequence()">Next turn sequence</button>
                                             @break
-                                            @case('4')
-
+                                            @case(7)
+                                                <button class="btn btn-primary" onclick="skipTurnSequence()">Don't defend</button>
+                                            @break
                                                 @default
                                             @endswitch
                                         @endif
@@ -265,10 +269,9 @@
                 changeTurnSequence();
                 if (currentTurn['id'] == 'CPU') {
                     if (!cpuDebug) {
-                        await sleep(1000 * 5);
+                        await sleep(1000 * 3);
                         requestCpuMove();
                     }
-
                 }
             });
 
