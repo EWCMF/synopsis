@@ -48,7 +48,7 @@ class State implements JsonSerializable
     public function addPlayer($playerId, $playerName)
     {
         if ($playerId == 'CPU') {
-            $this->cpu = new ComputerPlayer(rand(1, 5), rand(1, 5));
+            $this->cpu = new ComputerPlayer(rand(1, 3), rand(0, 1));
         }
 
         $player = [
@@ -162,7 +162,7 @@ class State implements JsonSerializable
             case 'bonusResource':
                 if ($this->turnSequence == 2) {
                     $this->currentMessageToLog = $this->currentTurn['name'] . " has gathered bonus resource.";
-                    if ($option != 0) {
+                    if ($option > 0) {
                         if ($option == 1) {
                             $specialEffectId = $this->cardsOnHand[$userId]['hand'][$cardIndex]['specialEffectId'];
                             if ($specialEffectId == 7) {
@@ -685,6 +685,22 @@ class State implements JsonSerializable
         } else {
             return false;
         }
+    }
+
+    public function getPlotsWithAffordablePopulationForId($playerId) {
+        $food = $this->cardsOnHand[$playerId]['resources']['food'];
+        $base = 6;
+        $plots = array();
+
+        foreach ($this->cardsOnHand[$playerId]['plots'] as $cardIndex => $card) {
+            $price = $this->cardsOnHand[$playerId]['plots'][$cardIndex]['attachedPopulation'] * 2 + $base;
+            $allowed = $food >= $price;
+            if ($allowed) {
+                $plots[$cardIndex] = $card;
+            }
+        }
+
+        return $plots;
     }
 
     public function getHybridPlotsForId($playerId)

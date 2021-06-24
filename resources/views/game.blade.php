@@ -225,6 +225,13 @@
                     if (turnSequence == 1 && currentTurn['id'] == userId ) {
                         requestPlotResourceModal();
                     }
+
+                    if (currentTurn['id'] == 'CPU') {
+                        if (!cpuDebug) {
+                            await sleep(1000 * 2);
+                            requestCpuMove();
+                        }
+                    }
                 }
 
             })
@@ -269,7 +276,7 @@
                 changeTurnSequence();
                 if (currentTurn['id'] == 'CPU') {
                     if (!cpuDebug) {
-                        await sleep(1000 * 3);
+                        await sleep(1000 * 2);
                         requestCpuMove();
                     }
                 }

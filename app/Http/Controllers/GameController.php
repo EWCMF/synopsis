@@ -165,7 +165,8 @@ class GameController extends Controller
         return json_encode($state->getPlayerNotes()[$userId]);
     }
 
-    public function addResources(Request $request) {
+    public function addResources(Request $request)
+    {
         $userId = Auth::id();
         $gameId = $request->input('game_id');
         $resources = $request->input('resources');
@@ -189,7 +190,8 @@ class GameController extends Controller
         }
     }
 
-    public function plotPurchase(Request $request) {
+    public function plotPurchase(Request $request)
+    {
         $userId = Auth::id();
         $gameId = $request->input('game_id');
         $resources = $request->input('resources');
@@ -278,7 +280,8 @@ class GameController extends Controller
         }
     }
 
-    public function skipMove(Request $request) {
+    public function skipMove(Request $request)
+    {
         $userId = Auth::id();
         $gameId = $request->input('game_id');
 
@@ -356,7 +359,7 @@ class GameController extends Controller
 
 
             default:
-            return response('Error', 404);
+                return response('Error', 404);
                 break;
         }
     }
@@ -409,7 +412,7 @@ class GameController extends Controller
         }
 
         $state = new State(Game::find($gameId)->state);
-            $hybridPlots = $state->getHybridPlotsForId($userId);
+        $hybridPlots = $state->getHybridPlotsForId($userId);
 
         $viewProperties = [
             'hybridPlots' => $hybridPlots
@@ -530,7 +533,8 @@ class GameController extends Controller
         );
     }
 
-    public function cpuMove(Request $request) {
+    public function cpuMove(Request $request)
+    {
         $userId = Auth::id();
         $gameId = $request->input('game_id');
 
@@ -543,11 +547,29 @@ class GameController extends Controller
             return response('Not authorized', 403);
         }
 
-        $state = new State(Game::find($gameId)->state);
+        $game = Game::find($gameId);
+
+        $state = new State($game->state);
         $state->cpuMove();
+
+        $game->state = json_encode($state);
+        $game->save();
+
+        if ($state->checkVictory()) {
+            broadcast(new GameFinished($gameId, $state));
+            return response()->noContent(200);
+        }
+
+        broadcast(new NewMove($gameId, $state));
+        foreach ($state->getPlayers() as $player) {
+            broadcast(new PlayerSpecificInfo($player['id'], $state));
+        }
+
+        return response()->noContent(200);
     }
 
-    public function debug() {
+    public function debug()
+    {
         $userId = Auth::id();
         $gameId = 26;
         $buildingIndex = 0;
@@ -565,6 +587,5 @@ class GameController extends Controller
         dd($state);
 
         return "test";
-
     }
 }
