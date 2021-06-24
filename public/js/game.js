@@ -91,12 +91,12 @@ function changeTurnSequence() {
 
         case 6:
             document.getElementById('turnSequence').textContent = 'Discard 2 cards';
-            document.getElementById('options').innerHTML = '<button class="btn btn-primary" onclick="skipTurnSequence()">Don\'t defend</button>';
+            document.getElementById('options').innerHTML = '';
             break;
 
         case 7:
             document.getElementById('turnSequence').textContent = 'Defend against attack';
-            document.getElementById('options').innerHTML = '';
+            document.getElementById('options').innerHTML = '<button class="btn btn-primary" onclick="skipTurnSequence()">Don\'t defend</button>';
             break;
 
         default:
@@ -213,7 +213,13 @@ function showCard(html, card, selectable, showOnly = false) {
                     document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="purchasePlot('${html.dataset.index}')">Purchase plot for ${checkPlotPrice()}</button>`
                 } else if (html.dataset.deck == 'ownPlots') {
                     let price = checkPopulationPrice(html.dataset.index);
-                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="purchasePopulation('${html.dataset.index}', '${html.dataset.deck}')">Purchase population for ${price} food</button>`
+                    let priceString;
+                    if (price == 'free') {
+                        priceString = `Purchase population for free`;
+                    } else {
+                        priceString = `Purchase population for ${price} food`;
+                    }
+                    document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="purchasePopulation('${html.dataset.index}', '${html.dataset.deck}')">${priceString}</button>`
                 }
             } else if (card.type == 'Bonus resource') {
                 if (card.specialEffectId == 7 || card.specialEffectId == 8) {
@@ -225,6 +231,8 @@ function showCard(html, card, selectable, showOnly = false) {
                 }
             } else if (card.type == 'Building' || card.type == 'Wonder') {
                 document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="purchaseBuilding('${html.dataset.index}')">Purchase ${card.type}</button>`
+            } else if (card.type == 'Technology') {
+                document.getElementById('cardDescription').innerHTML += `<button class="btn btn-primary" onclick="purchaseTech('${html.dataset.index}')">Purchase ${card.type}</button>`
             }
             break;
 
@@ -289,6 +297,25 @@ function purchasePopulation(index, deck) {
     pickCard(index, deck);
 }
 
+function purchaseTech(index) {
+    if (currentTurn['id'] != userId) {
+        return;
+    }
+
+    let production = +ownHand['resources']['commerce'];
+    let needed = +ownHand['hand'][index]['cost'];
+    let modifier = 0;
+
+    if (production < needed + modifier) {
+        alert("You lack enough commerce");
+        return;
+    }
+
+    document.getElementById('cardDescription').innerHTML = '';
+
+    pickCard(index, 'purchaseableTech');
+}
+
 function checkPopulationPrice(cardIndex) {
     if (!ownHand.freePopUsed) {
         return 'free';
@@ -324,7 +351,6 @@ function checkUseCards() {
             button.id = 'useButton';
             button.onclick = useSelectedCards;
             let textContent = '';
-            console.log(turnSequence);
             switch (turnSequence) {
                 case 3:
                     textContent = 'Use for attack';

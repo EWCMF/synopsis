@@ -59,16 +59,16 @@ class HomeController extends Controller
         return redirect('game/'.$game->id);
     }
 
-    public function debugState($id) {
-        $game = Game::find($id);
+    // public function debugState($id) {
+    //     $game = Game::find($id);
 
-        $state = new State($game->state);
-        $state->startGame();
+    //     $state = new State($game->state);
+    //     $state->startGame();
 
-        dd($state);
-    }
+    //     dd($state);
+    // }
 
-    public function debugView() {
-        return view('debug2');
-    }
+    // public function debugView() {
+    //     return view('debug2');
+    // }
 }

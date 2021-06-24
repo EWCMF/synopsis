@@ -87,13 +87,13 @@
                                             @case(7)
                                                 <button class="btn btn-primary" onclick="skipTurnSequence()">Don't defend</button>
                                             @break
-                                                @default
-                                            @endswitch
-                                        @endif
+                                            @default
+                                        @endswitch
+                                    @endif
 
 
-                                    @endisset
                                 @endisset
+                            @endisset
                         </div>
                     </div>
                 </div>
@@ -164,10 +164,10 @@
 
 
     <script src="{{ asset('js/game.js') }}"></script>
-    <script src="{{ asset('js/game-modal.js')}}"></script>
-    <script src="{{ asset('js/game-xhr.js')}}"></script>
+    <script src="{{ asset('js/game-modal.js') }}"></script>
+    <script src="{{ asset('js/game-xhr.js') }}"></script>
     <script defer>
-        const cpuDebug = true;
+        const cpuDebug = false;
         const Echo = window.Echo;
         const id = "{{ $id }}";
         let started = @json($started);
@@ -198,13 +198,13 @@
 
 
         Echo.join(`game.${id}`)
-            .here((users) => {
+            .here(async (users) => {
                 if (maxPlayers == 2) {
                     this.users = users;
                     usersCount = users.length;
                     updateOnline(this.users);
                     for (const user of users) {
-                    updatePlayerStatusInDB(user.id, true);
+                        updatePlayerStatusInDB(user.id, true);
                     }
                 } else {
                     updatePlayers(players);
@@ -222,16 +222,15 @@
                         requestPlotModal();
                         return;
                     }
-                    if (turnSequence == 1 && currentTurn['id'] == userId ) {
+                    if (turnSequence == 1 && currentTurn['id'] == userId) {
                         requestPlotResourceModal();
                     }
 
-                    if (currentTurn['id'] == 'CPU') {
-                        if (!cpuDebug) {
-                            await sleep(1000 * 2);
-                            requestCpuMove();
-                        }
+                    if (!cpuDebug) {
+                        await sleep(1000 * 2);
+                        requestCpuMove();
                     }
+
                 }
 
             })
@@ -257,7 +256,7 @@
                 players = data.newPlayers
                 updatePlayers(players);
             })
-            .listen('GameStarted', (data) => {
+            .listen('GameStarted', async (data) => {
                 addToLog('Game started. Shuffling deck and randomizing turn order.');
                 players = data.players;
                 updatePlayers(players);
@@ -287,7 +286,7 @@
                 ownHand = data.ownHand;
                 notes = data.notes;
                 updateNotes();
-                if (turnSequence == 1 && currentTurn['id'] == userId ) {
+                if (turnSequence == 1 && currentTurn['id'] == userId) {
                     requestPlotResourceModal();
                 }
             });

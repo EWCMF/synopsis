@@ -17,7 +17,7 @@ function requestCurrentGameView() {
     }));
 }
 
-function requestPlotModal() {
+async function requestPlotModal() {
     let xhr = new XMLHttpRequest();
     let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -33,7 +33,6 @@ function requestPlotModal() {
                 });
 
                 $('#plot-modal').modal('show');
-                return;
             }
 
             if (turnSequence == 6) {
@@ -49,15 +48,9 @@ function requestPlotModal() {
             }
 
             if (maxPlayers == 1) {
-                if (currentTurn['id'] == 'CPU') {
-
-
-                    if (!cpuDebug) {
-                        await sleep(1000 * 5);
-                        requestCpuMove();
-                    }
-
-
+                if (!cpuDebug) {
+                    await sleep(1000 * 5);
+                    requestCpuMove();
                 }
             }
         }
@@ -252,6 +245,10 @@ function useSelectedCards() {
 }
 
 function requestCpuMove() {
+    if (currentTurn['id'] != 'CPU') {
+        return;
+    }
+
     let xhr = new XMLHttpRequest();
     let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 

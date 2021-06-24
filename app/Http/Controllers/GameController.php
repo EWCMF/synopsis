@@ -340,6 +340,17 @@ class GameController extends Controller
 
         $cardsInHand = $state->getCardsInHand();
         switch ($game->max_players) {
+            case 1:
+                foreach (array_keys($cardsInHand) as $key) {
+                    if ($key == $userId) {
+                        $viewProperties['ownHand'] = $cardsInHand[$key];
+                    } else {
+                        $viewProperties['foeHand'] = $cardsInHand[$key];
+                    }
+                }
+
+                return view('partials.game-area', $viewProperties);
+                break;
             case 2:
                 foreach (array_keys($cardsInHand) as $key) {
                     if ($key == $userId) {
@@ -571,8 +582,7 @@ class GameController extends Controller
     public function debug()
     {
         $userId = Auth::id();
-        $gameId = 26;
-        $buildingIndex = 0;
+        $gameId = 34;
 
         $allowed = DB::table('game_user')->where([
             'user_id' => $userId,
@@ -583,8 +593,9 @@ class GameController extends Controller
             return response('Not authorized', 403);
         }
 
-        $state = new State(Game::find($gameId)->state);
-        dd($state);
+        $game = Game::find($gameId);
+
+        $state = new State($game->state);
 
         return "test";
     }

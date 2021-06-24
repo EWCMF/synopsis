@@ -124,7 +124,7 @@ Class ComputerPlayer implements JsonSerializable
         ];
 
         foreach ($hybridPlots as $hybridPlot) {
-            $populationCount = count($hybridPlot['attachedPopulation']);
+            $populationCount = $hybridPlot['attachedPopulation'];
             switch ($hybridPlot['specialEffectId']) {
                 case 4:
                     $chance = rand(0, 1);
@@ -207,7 +207,6 @@ Class ComputerPlayer implements JsonSerializable
             }
 
             $selectedTech = $this->randomSelectWeighted($techDecisionWeighting);
-
             return $state->pickCard($selectedTech, 'purchaseableTech', $this->id);
         }
 
@@ -232,10 +231,14 @@ Class ComputerPlayer implements JsonSerializable
             if ($chance > 20) {
                 $skipPurchaseBuilding = true;
             }
+        }
 
-            if (empty($allowedPlots)) {
-                $skipPurchaseBuilding = true;
-            }
+        if (empty($allowedPlots)) {
+            $skipPurchaseBuilding = true;
+        }
+
+        if (empty($affordableBuildings)) {
+            $skipPurchaseBuilding = true;
         }
 
         if (!$skipPurchaseBuilding) {
@@ -250,7 +253,7 @@ Class ComputerPlayer implements JsonSerializable
 
             $selectedPlotForBuilding = array_rand($allowedPlots, 1);
             $selectedBuilding = $this->randomSelectWeighted($buildingDecisionWeighting);
-            return $state->purchaseBuilding($this->id, $selectedBuilding, $selectedPlotForBuilding);
+            return $state->pickCard($selectedBuilding, 'building', $this->id, $selectedPlotForBuilding);
         }
 
         $skipPurchasePopulation = false;
@@ -260,20 +263,20 @@ Class ComputerPlayer implements JsonSerializable
             if ($chance > 20) {
                 $skipPurchasePopulation = true;
             }
+        }
 
-            if (empty($plotsWithAffordablePopulation)) {
-                $skipPurchasePopulation = true;
-            }
+        if (empty($plotsWithAffordablePopulation)) {
+            $skipPurchasePopulation = true;
         }
 
         if (!$skipPurchasePopulation) {
             $selectedPlotForPop = array_rand($plotsWithAffordablePopulation, 1);
-            return $state->purchasePopulation($this->id, $selectedPlotForPop);
+            return $state->pickCard($selectedPlotForPop, 'ownPlots', $this->id);
         }
 
         $purchaseablePlots = $state->getPurchaseablePlots();
         $needed = $state->getNeededResourcesForPlotForUser($this->id);
-        if ($sum >= $needed && $this->hoarderScore > 0) {
+        if ($sum >= $needed) {
                 $resourceDistribution = [
                     'commerce' => 0,
                     'food' => 0,
@@ -284,28 +287,48 @@ Class ComputerPlayer implements JsonSerializable
                     if ($commerce > 0) {
                         $commerce--;
                         $resourceDistribution['commerce']++;
+                        if (array_sum($resourceDistribution) == $needed) {
+                            break;
+                        }
                     }
 
                     if ($food > 0) {
                         $food--;
                         $resourceDistribution['food']++;
+                        if (array_sum($resourceDistribution) == $needed) {
+                            break;
+                        }
                     }
 
                     if ($production > 0) {
                         $production--;
                         $resourceDistribution['production']++;
+                        if (array_sum($resourceDistribution) == $needed) {
+                            break;
+                        }
                     }
                 }
 
                 $plotIndex = array_rand($purchaseablePlots, 1);
-                return $state->purchasePlot($this->id, $plotIndex, $resourceDistribution);
+
+                $resourcesRemaining = [
+                    'commerce' => $commerce,
+                    'food' => $food,
+                    'production' => $production,
+                ];
+
+                return $state->purchasePlot($this->id, $plotIndex, $resourcesRemaining);
         }
+
+        return $state->skipTurnSequence($this->id);
     }
 
     public function evaluateDefense(State $state) {
         if ($this->aggressivenessScore == 1) {
             $this->aggressivenessScore++;
         }
+
+
 
         $cardsInHand = $this->ownHand['hand'];
         $numberOfAttackers = count($state->getAttacking()['units']);
@@ -318,6 +341,10 @@ Class ComputerPlayer implements JsonSerializable
             if ($numberOfAttackers == count($defenderIndexes)) {
                 break;
             }
+        }
+
+        if (empty($defenderIndexes)) {
+            return $state->skipTurnSequence($this->id);
         }
 
         return $state->pickCards($defenderIndexes, 'playDeck', $this->id);
@@ -351,7 +378,13 @@ Class ComputerPlayer implements JsonSerializable
             }
 
             $numberToAttackWith = rand(1, count($units));
-            $selectedAttackerIndexes = array_rand($units, $numberToAttackWith);
+            if ($numberToAttackWith == 1) {
+                $value = array_rand($units, 1);
+                $selectedAttackerIndexes[$value] = $value;
+            } else {
+                $selectedAttackerIndexes = array_rand($units, $numberToAttackWith);
+            }
+
             return $state->pickCards($selectedAttackerIndexes, 'playDeck', $this->id);
         }
 

@@ -30,7 +30,6 @@ Route::post('/start-game', [GameController::class, 'startGame']);
 Route::post('/make-move', [GameController::class, 'makeMove']);
 Route::post('/make-moves', [GameController::class, 'makeMoves']);
 Route::post('/skip-move', [GameController::class, 'skipMove']);
-Route::get('/debug', [GameController::class, 'debug']);
 Route::post('/request-current-view', [GameController::class, 'requestCurrentView']);
 Route::post('/request-plot-modal', [GameController::class, 'requestPlotModal']);
 Route::post('/request-plot-resource-modal', [GameController::class, 'requestPlotResourceModal']);
@@ -39,5 +38,5 @@ Route::post('/request-building-purchase-modal', [GameController::class, 'request
 Route::post('/cpu-move', [GameController::class, 'cpuMove']);
 Route::post('/add-resources', [GameController::class, 'addResources']);
 Route::post('/purchase-plot', [GameController::class, 'plotPurchase']);
-Route::get('/debug-state/{id}', [HomeController::class, 'debugState']);
-Route::get('/debug-view', [HomeController::class, 'debugView']);
+Route::get('/debug', [GameController::class, 'debug']);
+

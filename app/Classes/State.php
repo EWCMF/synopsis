@@ -143,6 +143,7 @@ class State implements JsonSerializable
             case 'purchaseableTech':
                 if ($this->turnSequence == 2) {
                     $success = $this->purchaseTech($userId, $cardIndex);
+
                     if ($success) {
                         $this->currentMessageToLog = $this->currentTurn['name'] . ' has purchased technology and gained victory point';
                         return true;
@@ -186,6 +187,7 @@ class State implements JsonSerializable
                             }
                         }
 
+                        array_push($this->discardPile, $this->cardsOnHand[$userId]['hand'][$cardIndex]);
                         unset($this->cardsOnHand[$userId]['hand'][$cardIndex]);
                         $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
                         return true;
@@ -219,6 +221,7 @@ class State implements JsonSerializable
                                 return false;
                         }
 
+                        array_push($this->discardPile, $this->cardsOnHand[$userId]['hand'][$cardIndex]);
                         unset($this->cardsOnHand[$userId]['hand'][$cardIndex]);
                         $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
                         return true;
@@ -316,7 +319,7 @@ class State implements JsonSerializable
                         $this->defending['index'] = $defendingIndex;
 
                         foreach ($cardIndexes as $cardIndex) {
-                            array_push($this->defending, $this->cardsOnHand[$userId]['hand'][$cardIndex]);
+                            array_push($this->defending['units'], $this->cardsOnHand[$userId]['hand'][$cardIndex]);
                             unset($this->cardsOnHand[$userId]['hand'][$cardIndex]);
                         }
                         $this->cardsOnHand[$userId]['hand'] = array_values($this->cardsOnHand[$userId]['hand']);
@@ -395,6 +398,14 @@ class State implements JsonSerializable
     public function drawCards()
     {
         $cardsToDraw = 4;
+
+        if (count($this->playDeck) <= $cardsToDraw) {
+            $this->playDeck = array_merge($this->playDeck, $this->discardPile);
+            shuffle($this->playDeck);
+            shuffle($this->playDeck);
+            shuffle($this->playDeck);
+            $this->discardPile = array();
+        }
         for ($i = 0; $i < $cardsToDraw; $i++) {
             array_push($this->cardsOnHand[$this->currentTurn['id']]['hand'], array_pop($this->playDeck));
         }
@@ -553,12 +564,17 @@ class State implements JsonSerializable
 
     public function updateNotes($playerId)
     {
+
+        if ($playerId == 'CPU') {
+            return;
+        }
+
         $this->playerNotes[$playerId] = array();
         if (!$this->cardsOnHand[$playerId]['freePopUsed']) {
             array_push($this->playerNotes[$playerId], "One free population available for any plot.");
         }
 
-        if ($this->turnSequence == 7) {
+        if ($this->turnSequence == 7 && !empty($this->attacking)) {
             if ($this->players[$this->attacking['index']]['id'] != $playerId) {
                 array_push($this->playerNotes[$playerId], "Player is launching attack against you. Choose units to defend");
             }
@@ -574,15 +590,23 @@ class State implements JsonSerializable
         if ($commerceAvailable >= ($cost + $modifier)) {
             $card = array_splice($this->purchaseableTechs, $cardIndex, 1);
             array_push($this->cardsOnHand[$playerId]['techs'], $card[0]);
-            array_push(
-                $this->purchaseableTechs,
-                array_pop($this->techDeck),
-            );
+            if (!empty($this->techDeck)) {
+                array_push(
+                    $this->purchaseableTechs,
+                    array_pop($this->techDeck),
+                );
+            }
+
+            $this->cardsOnHand[$playerId]['resources']['commerce'] -= $cost;
+            return true;
         }
+
+        return false;
     }
 
     public function purchaseBuilding($playerId, $cardIndex, $plotId)
     {
+
         $production = $this->cardsOnHand[$playerId]['resources']['production'];
         $cost = $this->cardsOnHand[$playerId]['hand'][$cardIndex]['cost'];
         $modifier = 0;
@@ -605,6 +629,7 @@ class State implements JsonSerializable
             array_push($this->cardsOnHand[$playerId]['plots'][$plotId]['attachedBuildings'], $this->cardsOnHand[$playerId]['hand'][$cardIndex]);
             unset($this->cardsOnHand[$playerId]['hand'][$cardIndex]);
             $this->cardsOnHand[$playerId]['hand'] = array_values($this->cardsOnHand[$playerId]['hand']);
+            $this->cardsOnHand[$playerId]['resources']['production'] -= $cost;
             return true;
         }
 
@@ -625,12 +650,13 @@ class State implements JsonSerializable
         $diffFood = $this->cardsOnHand[$playerId]['resources']['food'] - $food;
         $diffProduction = $this->cardsOnHand[$playerId]['resources']['production'] - $production;
 
+
         $sum = $diffCommerce + $diffFood + $diffProduction;
         $needed = $this->getNeededResourcesForPlotForUser($playerId);
+
         if ($sum != $needed) {
             return false;
         }
-
 
         $this->cardsOnHand[$playerId]['resources']['commerce'] = $commerce;
         $this->cardsOnHand[$playerId]['resources']['food'] = $food;
@@ -638,10 +664,13 @@ class State implements JsonSerializable
 
         $card = array_splice($this->purchaseablePlots, $cardIndex, 1);
         array_push($this->cardsOnHand[$playerId]['plots'], $card[0]);
-        array_push(
-            $this->purchaseablePlots,
-            array_pop($this->plotDeck),
-        );
+        if (!empty($this->plotDeck)) {
+            array_push(
+                $this->purchaseablePlots,
+                array_pop($this->plotDeck),
+            );
+        }
+
         $this->currentMessageToLog = $this->currentTurn['name'] . " has purchased a plot";
         return true;
     }
@@ -680,7 +709,9 @@ class State implements JsonSerializable
 
         if ($allowed || $canUseFreePop) {
             $this->cardsOnHand[$playerId]['plots'][$cardIndex]['attachedPopulation']++;
-            $this->cardsOnHand[$playerId]['resources']['food'] -= $price;
+            if (!$canUseFreePop) {
+                $this->cardsOnHand[$playerId]['resources']['food'] -= $price;
+            }
             return true;
         } else {
             return false;

@@ -22,7 +22,7 @@
                 <div class="row">
                     <div class="col-4">
                         <div class="row ml-3">
-                            <p>food available:&nbsp;</p>
+                            <p>Food available:&nbsp;</p>
                             <div id="foodAvail">{{ $resources['food'] }}</div>
                             <div hidden id="foodAvailMax">{{ $resources['food'] }}</div>
                         </div>
