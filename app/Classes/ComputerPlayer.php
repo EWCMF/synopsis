@@ -329,7 +329,6 @@ Class ComputerPlayer implements JsonSerializable
         }
 
 
-
         $cardsInHand = $this->ownHand['hand'];
         $numberOfAttackers = count($state->getAttacking()['units']);
         $defenderIndexes = array();

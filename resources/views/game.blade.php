@@ -167,7 +167,6 @@
     <script src="{{ asset('js/game-modal.js') }}"></script>
     <script src="{{ asset('js/game-xhr.js') }}"></script>
     <script defer>
-        const cpuDebug = false;
         const Echo = window.Echo;
         const id = "{{ $id }}";
         let started = @json($started);
@@ -203,9 +202,6 @@
                     this.users = users;
                     usersCount = users.length;
                     updateOnline(this.users);
-                    for (const user of users) {
-                        updatePlayerStatusInDB(user.id, true);
-                    }
                 } else {
                     updatePlayers(players);
                 }
@@ -226,17 +222,14 @@
                         requestPlotResourceModal();
                     }
 
-                    if (!cpuDebug) {
-                        await sleep(1000 * 2);
-                        requestCpuMove();
-                    }
-
+                    await sleep(1000 * 2);
+                    requestCpuMove();
                 }
 
             })
             .joining((user) => {
                 this.users.push(user);
-                usersCount = usersCount + 1;
+                usersCount++;
                 updateOnline(this.users);
                 addToLog(user.name + " has joined.");
                 checkCanStart(usersCount);
@@ -244,9 +237,8 @@
             .leaving((user) => {
                 const index = this.users.indexOf(user);
                 this.users.splice(index, 1);
-                usersCount = usersCount - 1;
+                usersCount--;
                 updateOnline(this.users);
-                updatePlayerStatusInDB(user.id, false);
                 addToLog(user.name + " has left.");
             })
             .error((error) => {
@@ -274,10 +266,8 @@
                 changeCurrentTurn();
                 changeTurnSequence();
                 if (currentTurn['id'] == 'CPU') {
-                    if (!cpuDebug) {
-                        await sleep(1000 * 2);
-                        requestCpuMove();
-                    }
+                    await sleep(1000 * 2);
+                    requestCpuMove();
                 }
             });
 

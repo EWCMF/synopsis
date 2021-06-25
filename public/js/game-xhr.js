@@ -48,10 +48,8 @@ async function requestPlotModal() {
             }
 
             if (maxPlayers == 1) {
-                if (!cpuDebug) {
-                    await sleep(1000 * 5);
-                    requestCpuMove();
-                }
+                await sleep(1000 * 5);
+                requestCpuMove();
             }
         }
     }
@@ -204,20 +202,6 @@ function skipTurnSequence() {
         'game_id': id,
     }));
 };
-
-function updatePlayerStatusInDB(userId, isPlaying) {
-    let xhr = new XMLHttpRequest();
-    let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-    xhr.open('POST', '/change-playing-state');
-    xhr.setRequestHeader("X-CSRF-Token", csrf);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({
-        'user_id': userId,
-        'game_id': id,
-        'isPlaying': isPlaying
-    }));
-}
 
 function useSelectedCards() {
     let xhr = new XMLHttpRequest();

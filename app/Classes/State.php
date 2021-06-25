@@ -892,6 +892,7 @@ class State implements JsonSerializable
                     break;
                 }
             }
+            $this->currentMessageToLog = $this->winner['name'] . 'has won the game!';
 
             $this->currentTurn = -1;
             $this->turnSequence = -1;
