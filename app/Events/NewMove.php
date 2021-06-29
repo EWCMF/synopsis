@@ -42,6 +42,7 @@ class NewMove implements ShouldBroadcast
             'log' => $this->state->getCurrentMessageToLog(),
             'currentTurn' => $this->state->getCurrentTurn(),
             'turnSequence' => $this->state->getTurnSequence(),
+            'purchaseableTechs' => $this->state->getPurchaseableTechs(),
         ];
     }
 }

@@ -195,6 +195,11 @@
             let notes = null;
         @endif
 
+        @if ($purchaseableTechs)
+            let purchaseableTechs = @json($purchaseableTechs)
+        @else
+            let purchaseableTechs = null;
+        @endif
 
         Echo.join(`game.${id}`)
             .here(async (users) => {
@@ -263,6 +268,7 @@
                 checkMove();
                 currentTurn = data.currentTurn;
                 turnSequence = +data.turnSequence;
+                purchaseableTechs = data.purchaseableTechs
                 changeCurrentTurn();
                 changeTurnSequence();
                 if (currentTurn['id'] == 'CPU') {

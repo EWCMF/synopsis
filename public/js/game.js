@@ -303,7 +303,7 @@ function purchaseTech(index) {
     }
 
     let production = +ownHand['resources']['commerce'];
-    let needed = +ownHand['hand'][index]['cost'];
+    let needed = +purchaseableTechs[index]['cost'];
     let modifier = 0;
 
     if (production < needed + modifier) {

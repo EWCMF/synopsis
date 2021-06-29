@@ -25,7 +25,7 @@
                                 <button class="btn btn-primary mt-3 btn-block" onclick="window.location = '/user-game-list'" >Currently ongoing games</button>
 
                                 <button class="btn btn-primary mt-3 btn-block" onclick="window.location = '/game-list'">Join
-                                    existing game</button>
+                                    game</button>
 
                             </div>
                         </div>

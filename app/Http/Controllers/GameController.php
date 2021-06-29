@@ -528,18 +528,16 @@ class GameController extends Controller
     {
         $user = Auth::user();
 
-        $joinedGames = DB::table('game_user')->where('user_id', $user->id)->value('game_id');
+        $joinedGames = DB::table('game_user')->where('user_id', $user->id)->pluck('game_id')->toArray();
 
-        $games = Game::withCount(['users' => function (Builder $query) {
-            $query->where('playing', '=', true);
-        }])->where([
-            ['id', '=', $joinedGames],
-        ])->get();
+        $games = Game::whereIn('id', $joinedGames)->with(['users'])->get();
+
 
         return view(
             'user-game-list',
             [
-                'games' => $games
+                'games' => $games,
+                'you' => $user->name,
             ]
         );
     }

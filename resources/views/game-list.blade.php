@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            @foreach ($games as $game)
+            @forelse ($games as $game)
             <div class="card bg-dark">
                 <div class="card-body">
                     <div class="container">
@@ -23,7 +23,22 @@
 
                 </div>
               </div>
-            @endforeach
+
+            @empty
+            <div class="card bg-dark">
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col text-center text-light">
+                                No games present
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+              </div>
+            @endforelse
         </div>
     </div>
 </div>

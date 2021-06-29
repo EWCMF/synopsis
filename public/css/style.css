@@ -13,3 +13,7 @@ body {
 .eggplant {
     background-color: #3574B1;
 }
+
+a {
+    cursor: pointer;
+}
