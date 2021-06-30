@@ -21,28 +21,28 @@ class UserSeeder extends Seeder
 
         DB::table('users')->insert([
             [
-                'name' => "Tester1",
+                'name' => "Tommy",
                 'email' => 'test1@mail.com',
                 'password' => Hash::make('12345678'),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
-                'name' => "Tester2",
+                'name' => "Hans",
                 'email' => 'test2@mail.com',
                 'password' => Hash::make('12345678'),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
-                'name' => "Tester3",
+                'name' => "Børge",
                 'email' => 'test3@mail.com',
                 'password' => Hash::make('12345678'),
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt
             ],
             [
-                'name' => "Tester4",
+                'name' => "Benny",
                 'email' => 'test4@mail.com',
                 'password' => Hash::make('12345678'),
                 'created_at' => $createdAt,

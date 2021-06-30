@@ -237,7 +237,9 @@
                 usersCount++;
                 updateOnline(this.users);
                 addToLog(user.name + " has joined.");
-                checkCanStart(usersCount);
+                if (!started) {
+                    checkCanStart(usersCount);
+                }
             })
             .leaving((user) => {
                 const index = this.users.indexOf(user);
